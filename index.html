@@ -30,7 +30,9 @@ body{
   background:linear-gradient(90deg,var(--lake),var(--sun));transition:width .45s ease;}
 .dots{position:fixed;right:11px;top:50%;transform:translateY(-50%);z-index:60;
   display:flex;flex-direction:column;gap:7px;}
-.dot{width:5px;height:5px;border-radius:50%;background:var(--line);transition:.35s;}
+.dot{width:6px;height:6px;border-radius:50%;background:var(--line);transition:.35s;
+  position:relative;cursor:pointer;border:none;padding:0;}
+.dot::after{content:"";position:absolute;inset:-8px;}
 .dot.on{background:var(--lake);transform:scale(1.6);}
 .h5{height:100vh;height:100dvh;overflow-y:scroll;scroll-snap-type:y mandatory;
   -webkit-overflow-scrolling:touch;scrollbar-width:none;}
@@ -82,6 +84,8 @@ h2{font-size:33px;line-height:1.3;font-weight:700;letter-spacing:.01em;}
   radial-gradient(120% 70% at 78% 12%,rgba(222,132,56,.18),transparent 60%),
   radial-gradient(90% 60% at 12% 96%,rgba(30,110,140,.20),transparent 62%),
   linear-gradient(180deg,#F7F4EC 0%,#EDE8DC 100%);}
+.scene{position:absolute;inset:0;width:100%;height:100%;z-index:1;pointer-events:none;}
+.scene .flock{animation:drift 13s ease-in-out infinite;}
 .cover-inner{position:relative;z-index:2;}
 .hint{position:absolute;bottom:34px;left:0;right:0;width:max-content;margin:0 auto;
   font-size:11px;letter-spacing:.22em;color:rgba(34,50,60,.45);white-space:nowrap;}
@@ -116,6 +120,10 @@ h2{font-size:33px;line-height:1.3;font-weight:700;letter-spacing:.01em;}
 .plate .go{color:var(--lake);font-size:15px;line-height:1;}
 .back{position:absolute;top:26px;left:34px;display:inline-flex;align-items:center;gap:6px;
   font-size:12px;letter-spacing:.06em;color:var(--lake);text-decoration:none;}
+.band{width:100%;border-radius:14px;overflow:hidden;margin:2px 0 16px;
+  box-shadow:0 8px 22px rgba(14,63,82,.12);}
+.band img,.band svg{display:block;width:100%;height:auto;}
+.phone .scr .live svg{display:block;width:100%;height:100%;}
 .plate{display:grid;grid-template-columns:34px 1fr;gap:16px;align-items:center;
   padding:19px 20px;border-radius:14px;
   background:rgba(255,255,255,.6);border:1px solid var(--line);}
@@ -133,6 +141,15 @@ h2{font-size:33px;line-height:1.3;font-weight:700;letter-spacing:.01em;}
   box-shadow:0 22px 44px rgba(14,63,82,.28);}
 .phone .scr{position:relative;height:300px;border-radius:19px;overflow:hidden;
   background:linear-gradient(180deg,#BFD9E4 0%,#8FBCCE 42%,#5E94A8 100%);}
+.phone .scr .live{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;
+  filter:blur(16px) saturate(1.15) brightness(1.06);transform:scale(1.14);
+  transition:filter 2.6s cubic-bezier(.22,.7,.2,1),transform 2.6s cubic-bezier(.22,.7,.2,1);}
+.in .phone .scr .live{filter:blur(0) saturate(1) brightness(1);transform:scale(1);
+  transition-delay:1s;}
+.live-bar{position:absolute;left:16px;right:16px;bottom:14px;height:2px;border-radius:2px;
+  background:rgba(255,255,255,.28);overflow:hidden;}
+.live-bar i{display:block;height:100%;width:0;background:#F4F0E7;transition:width 2.4s ease 1s;}
+.in .live-bar i{width:100%;}
 .phone .scr .sunset{position:absolute;top:44px;left:0;right:0;height:70px;
   background:radial-gradient(closest-side,rgba(222,132,56,.55),transparent);}
 .phone .scr .land{position:absolute;bottom:0;left:0;right:0;height:96px;background:#2E5566;}
@@ -201,6 +218,8 @@ h2{font-size:33px;line-height:1.3;font-weight:700;letter-spacing:.01em;}
   transition:background .25s ease,color .25s ease;}
 .bgm:hover{background:rgba(34,50,60,.18);}
 .bgm.playing{background:rgba(30,110,140,.20);color:var(--lake);}
+.bgm.on-dark{background:rgba(242,237,227,.22);color:#F2EDE3;}
+.bgm.on-dark.playing{background:rgba(222,132,56,.22);color:#DE8438;}
 .bgm .ic-on{display:none;}
 .bgm.playing .ic-on{display:block;}
 .bgm.playing .ic-off{display:none;}
@@ -212,10 +231,79 @@ h2{font-size:33px;line-height:1.3;font-weight:700;letter-spacing:.01em;}
 <div class="dots" id="dots"></div>
 
 <div class="h5" id="h5">
+  <!-- 01 开场 | 动画：候鸟横掠 + 标题浮现 + 分隔线生长 + 副题 -->
+  <section class="screen dark open">
+    <div class="open-glow"></div>
+    <svg class="open-flock" viewBox="0 0 390 130" fill="none" aria-hidden="true">
+      <g stroke="#DE8438" stroke-linecap="round">
+        <path d="M40 44 C50 33 60 33 70 44 C80 33 90 33 100 44" stroke-width="2"/>
+        <path d="M118 68 C126 59 134 59 142 68 C150 59 158 59 166 68" stroke-width="1.7" opacity=".8"/>
+        <path d="M18 84 C24 77 30 77 36 84 C42 77 48 77 54 84" stroke-width="1.4" opacity=".65"/>
+        <path d="M180 40 C186 33 192 33 198 40 C204 33 210 33 216 40" stroke-width="1.3" opacity=".5"/>
+        <path d="M232 74 C238 67 244 67 250 74 C256 67 262 67 268 74" stroke-width="1.2" opacity=".4"/>
+      </g>
+    </svg>
+    <div class="open-inner">
+      <p class="label a d1" style="color:#DE8438;text-align:center">2026 · 中国江西 · 鄱阳湖</p>
+      <h1 class="serif a d2" style="margin-top:20px;text-align:center;color:#F2EDE3">鄱阳湖<br>国际观鸟季</h1>
+      <div class="rule grow" style="margin:26px 0 20px;background:rgba(242,237,227,.28)"></div>
+      <p class="sub a d4" style="text-align:center">生态消费周　一湖清水 · 万羽归巢</p>
+    </div>
+    <div class="hint a d5" style="color:rgba(242,237,227,.5)">轻触屏幕继续</div>
+  </section>
+
 
   <!-- 01 封面 | 动画：候鸟漂移循环 + 主题字入场 + 分隔线生长 + 副标题 + 提示浮动 -->
   <section class="screen">
     <div class="cover-bg"></div>
+    <svg class="scene" viewBox="0 0 390 844" preserveAspectRatio="xMidYMax slice" aria-hidden="true">
+      <defs>
+        <linearGradient id="hill1" x1="0" y1="0" x2="0" y2="1">
+          <stop offset="0" stop-color="#5B7E93" stop-opacity=".17"/>
+          <stop offset="1" stop-color="#5B7E93" stop-opacity="0"/>
+        </linearGradient>
+        <linearGradient id="hill2" x1="0" y1="0" x2="0" y2="1">
+          <stop offset="0" stop-color="#3E6C82" stop-opacity=".21"/>
+          <stop offset="1" stop-color="#3E6C82" stop-opacity="0"/>
+        </linearGradient>
+        <linearGradient id="mist" x1="0" y1="0" x2="0" y2="1">
+          <stop offset="0" stop-color="#F7F4EC" stop-opacity="0"/>
+          <stop offset=".5" stop-color="#F7F4EC" stop-opacity=".8"/>
+          <stop offset="1" stop-color="#F7F4EC" stop-opacity="0"/>
+        </linearGradient>
+        <linearGradient id="water2" x1="0" y1="0" x2="0" y2="1">
+          <stop offset="0" stop-color="#8FB6C7" stop-opacity=".08"/>
+          <stop offset="1" stop-color="#8FB6C7" stop-opacity=".32"/>
+        </linearGradient>
+      </defs>
+      <path d="M0 690 C40 664 70 650 108 662 C150 676 178 700 214 690 C252 680 280 654 318 660 C348 665 372 684 390 692 L390 780 L0 780 Z" fill="url(#hill1)"/>
+      <path d="M0 716 C36 700 74 690 112 700 C152 711 186 730 226 722 C266 714 300 696 340 702 C364 706 380 716 390 722 L390 800 L0 800 Z" fill="url(#hill2)"/>
+      <rect x="0" y="688" width="390" height="94" fill="url(#mist)"/>
+      <path d="M0 764 L390 764 L390 844 L0 844 Z" fill="url(#water2)"/>
+      <g stroke="#2E5F73" fill="none" opacity=".16" stroke-linecap="round">
+        <path d="M28 792 C64 784 100 784 136 792" stroke-width="1"/>
+        <path d="M196 806 C232 798 268 798 304 806" stroke-width=".9"/>
+        <path d="M74 822 C110 814 146 814 182 822" stroke-width=".8"/>
+        <path d="M232 834 C268 826 304 826 340 834" stroke-width=".7"/>
+      </g>
+      <g fill="#8C7A4B" opacity=".26">
+        <path d="M34 844 C32 800 36 772 44 750 C46 776 44 806 42 844 Z"/>
+        <path d="M52 844 C52 806 58 780 68 760 C68 790 62 816 60 844 Z"/>
+        <path d="M348 844 C350 802 346 774 338 752 C336 778 340 808 342 844 Z"/>
+        <path d="M330 844 C330 808 324 782 314 762 C314 792 320 818 322 844 Z"/>
+      </g>
+      <g fill="#8C7A4B" opacity=".22">
+        <ellipse cx="44" cy="748" rx="2.4" ry="8" transform="rotate(-6 44 748)"/>
+        <ellipse cx="68" cy="758" rx="2.2" ry="7" transform="rotate(5 68 758)"/>
+        <ellipse cx="338" cy="750" rx="2.4" ry="8" transform="rotate(6 338 750)"/>
+        <ellipse cx="314" cy="762" rx="2.2" ry="7" transform="rotate(-5 314 762)"/>
+      </g>
+      <g class="flock" stroke="#3E6C82" fill="none" stroke-linecap="round" stroke-width="1.2" opacity=".32">
+        <path d="M226 176 C232 169 238 169 244 176 C250 169 256 169 262 176"/>
+        <path d="M266 192 C271 186 276 186 281 192 C286 186 291 186 296 192"/>
+        <path d="M198 198 C202 193 206 193 210 198 C214 193 218 193 222 198"/>
+      </g>
+    </svg>
     <div class="cover-inner">
       <svg class="birds drift a d1" width="118" height="30" viewBox="0 0 118 30" fill="none" style="margin-bottom:26px">
         <path d="M2 14C10 4 18 4 26 14C34 4 42 4 50 14" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"/>
@@ -232,7 +320,8 @@ h2{font-size:33px;line-height:1.3;font-weight:700;letter-spacing:.01em;}
   </section>
 
   <!-- 02 主题语 | 动画：大字入场 + 分隔线生长 + 水波循环 + 候鸟漂移 -->
-  <section class="screen" style="justify-content:center">
+  <section class="screen wash-cool" style="justify-content:center">
+    <svg class="bgfx" viewBox="0 0 390 844" preserveAspectRatio="xMidYMid slice" aria-hidden="true"><g color="#2E5F73" opacity="0.24"><g transform="translate(226,186) scale(1.0)"><path d="M0 8 C7 0 14 0 21 8 C28 0 35 0 42 8" fill="none" stroke="currentColor" stroke-width="0.95" stroke-linecap="round"/></g><g transform="translate(256,201) scale(0.82)"><path d="M0 8 C7 0 14 0 21 8 C28 0 35 0 42 8" fill="none" stroke="currentColor" stroke-width="0.8" stroke-linecap="round"/></g><g transform="translate(283,177) scale(0.72)"><path d="M0 8 C7 0 14 0 21 8 C28 0 35 0 42 8" fill="none" stroke="currentColor" stroke-width="0.72" stroke-linecap="round"/></g><g transform="translate(311,195) scale(0.62)"><path d="M0 8 C7 0 14 0 21 8 C28 0 35 0 42 8" fill="none" stroke="currentColor" stroke-width="0.65" stroke-linecap="round"/></g><g transform="translate(336,181) scale(0.55)"><path d="M0 8 C7 0 14 0 21 8 C28 0 35 0 42 8" fill="none" stroke="currentColor" stroke-width="0.6" stroke-linecap="round"/></g></g><path d="M0 714 C60 700 120 724 180 714 C240 704 300 726 390 714" fill="none" stroke="#2E5F73" stroke-width="1.3" opacity="0.26"/><g stroke="#2E5F73" fill="none" stroke-linecap="round" opacity="0.203"><path d="M28 740 C66 732 104 732 142 740" stroke-width="1.0"/><path d="M198 758 C236 750 274 750 312 758" stroke-width="0.9"/><path d="M66 778 C104 770 142 770 180 778" stroke-width="0.8"/><path d="M224 800 C262 792 300 792 338 800" stroke-width="0.7"/></g><path d="M20 848 C22 789 30 751 32 730 C34 763 26 796 23 848 Z" fill="#7E6E44" opacity="0.22"/><ellipse cx="32" cy="734" rx="2.7" ry="9.5" fill="#7E6E44" opacity="0.198" transform="rotate(8 32 734)"/><path d="M39 848 C37 800 31 769 33 752 C35 778 41 805 42 848 Z" fill="#7E6E44" opacity="0.22"/><ellipse cx="33" cy="756" rx="2.7" ry="9.5" fill="#7E6E44" opacity="0.198" transform="rotate(8 33 756)"/><path d="M57 848 C59 783 69 741 71 718 C73 754 63 790 60 848 Z" fill="#7E6E44" opacity="0.22"/><ellipse cx="71" cy="722" rx="2.7" ry="9.5" fill="#7E6E44" opacity="0.198" transform="rotate(8 71 722)"/><path d="M76 848 C74 804 70 775 72 760 C74 784 78 809 79 848 Z" fill="#7E6E44" opacity="0.22"/><ellipse cx="72" cy="764" rx="2.7" ry="9.5" fill="#7E6E44" opacity="0.198" transform="rotate(8 72 764)"/><path d="M370 848 C368 789 363 751 362 730 C359 763 372 796 373 848 Z" fill="#7E6E44" opacity="0.22"/><ellipse cx="362" cy="734" rx="2.7" ry="9.5" fill="#7E6E44" opacity="0.198" transform="rotate(-8 362 734)"/><path d="M351 848 C352 800 362 769 361 752 C358 778 356 805 354 848 Z" fill="#7E6E44" opacity="0.22"/><ellipse cx="361" cy="756" rx="2.7" ry="9.5" fill="#7E6E44" opacity="0.198" transform="rotate(-8 361 756)"/><path d="M333 848 C330 783 324 741 323 718 C320 754 334 790 336 848 Z" fill="#7E6E44" opacity="0.22"/><ellipse cx="323" cy="722" rx="2.7" ry="9.5" fill="#7E6E44" opacity="0.198" transform="rotate(-8 323 722)"/><path d="M314 848 C315 804 323 775 322 760 C319 784 319 809 317 848 Z" fill="#7E6E44" opacity="0.22"/><ellipse cx="322" cy="764" rx="2.7" ry="9.5" fill="#7E6E44" opacity="0.198" transform="rotate(-8 322 764)"/></svg>
     <p class="label a d1">主题</p>
     <h2 class="serif a d2" style="margin-top:20px;font-size:36px;line-height:1.5">
       一湖清水<br>万羽归巢
@@ -246,24 +335,27 @@ h2{font-size:33px;line-height:1.3;font-weight:700;letter-spacing:.01em;}
       <path d="M0 16C26 4 54 4 80 16C106 28 134 28 160 16C186 4 214 4 240 16C266 28 294 28 320 16" stroke="#1E6E8C" stroke-width="1.4" opacity=".5"/>
       <path d="M0 32C26 20 54 20 80 32C106 44 134 44 160 32C186 20 214 20 240 32C266 44 294 44 320 32" stroke="#DE8438" stroke-width="1.2" opacity=".32"/>
     </svg>
-    <div class="idx">02</div>
+    <div class="idx">3</div>
   </section>
 
   <!-- 03 为什么是鄱阳湖 | 动画：标题 + 三组数据逐条入场 + 底下说明 -->
-  <section class="screen">
+  <section class="screen wash-cool">
+    <svg class="bgfx" viewBox="0 0 390 844" preserveAspectRatio="xMidYMid slice" aria-hidden="true"><path d="M0 740 C60 726 120 750 180 740 C240 730 300 752 390 740" fill="none" stroke="#2E5F73" stroke-width="1.3" opacity="0.2"/><g stroke="#2E5F73" fill="none" stroke-linecap="round" opacity="0.156"><path d="M28 766 C66 758 104 758 142 766" stroke-width="1.0"/><path d="M198 784 C236 776 274 776 312 784" stroke-width="0.9"/><path d="M66 804 C104 796 142 796 180 804" stroke-width="0.8"/><path d="M224 826 C262 818 300 818 338 826" stroke-width="0.7"/></g></svg>
     <p class="label a d1">为什么是鄱阳湖</p>
     <h2 class="serif a d2" style="margin:16px 0 10px">候鸟选中了这里</h2>
+    <div class="band zoom a d3"><img src="img/birds.jpg" alt="鄱阳湖水面成群起飞的越冬候鸟"></div>
     <div>
-      <div class="stat a d3"><b>最大</b><span>中国最大的淡水湖，也是东亚—澳大利西亚候鸟迁飞通道上的关键驿站</span></div>
-      <div class="stat a d4"><b>数十万</b><span>每年冬季在此越冬的候鸟数量，白鹤、东方白鹳等珍稀物种在此集群</span></div>
-      <div class="stat a d5"><b>12 月</b><span>候鸟越冬高峰恰在冬季，与年末消费季天然重合</span></div>
+      <div class="stat a d3"><b>80 万</b><span>越冬水鸟同步调查记录到的数量，鄱阳湖区及五河流域合计 80.1 万余只</span></div>
+      <div class="stat a d4"><b>98%</b><span>全球约九成八的白鹤在鄱阳湖越冬，东方白鹳的比例同样超过九成</span></div>
+      <div class="stat a d5"><b>22 处</b><span>第四届鄱阳湖国际观鸟季设置的观鸟点数量，活动周期覆盖整个冬季</span></div>
     </div>
-    <p class="meta a d6" style="margin-top:18px">数据来源：公开报道与保护区公开资料</p>
-    <div class="idx">03</div>
+    <p class="meta a d6" style="margin-top:18px">数据来源：江西省林业局越冬水鸟同步调查、鄱阳湖国际观鸟季新闻发布会</p>
+    <div class="idx">4</div>
   </section>
 
   <!-- 04 我们要做什么 | 动画：标题 + 旧卡 + 箭头 + 新卡 + 结语 -->
-  <section class="screen">
+  <section class="screen wash-warm">
+    <svg class="bgfx" viewBox="0 0 390 844" preserveAspectRatio="xMidYMid slice" aria-hidden="true"><path d="M-20 700 C120 620 210 470 300 300 C338 224 362 168 392 116" fill="none" stroke="#2E4E6E" stroke-width="1.3" stroke-dasharray="6 10" opacity=".16"/><circle cx="300" cy="300" r="4.5" fill="#2E4E6E" opacity=".18"/><circle cx="120" cy="620" r="4.5" fill="#DE8438" opacity=".18"/><path d="M0 754 C60 740 120 764 180 754 C240 744 300 766 390 754" fill="none" stroke="#2E5F73" stroke-width="1.3" opacity="0.24"/><g stroke="#2E5F73" fill="none" stroke-linecap="round" opacity="0.187"><path d="M28 780 C66 772 104 772 142 780" stroke-width="1.0"/><path d="M198 798 C236 790 274 790 312 798" stroke-width="0.9"/><path d="M66 818 C104 810 142 810 180 818" stroke-width="0.8"/><path d="M224 840 C262 832 300 832 338 840" stroke-width="0.7"/></g></svg>
     <p class="label a d1">要解决的问题</p>
     <h2 class="serif a d2" style="margin:16px 0 22px">从一次观景<br>到一场消费</h2>
     <div class="compare">
@@ -277,37 +369,36 @@ h2{font-size:33px;line-height:1.3;font-weight:700;letter-spacing:.01em;}
         <p>把观鸟季升级为「观鸟＋生态消费」的复合场景，让候鸟带来的流量，落到本地产品和本地商户身上。</p>
       </div>
     </div>
-    <div class="idx">04</div>
+    <div class="idx">5</div>
   </section>
 
-  <!-- 05 三大板块 | 动画：标题 + 三块依次入场 + 图标旋转 -->
-  <section class="screen">
+  <!-- 05 板块总览 | 动画：标题 + 四块依次入场 + 图标脉动 -->
+  <section class="screen wash-cool">
+    <svg class="bgfx" viewBox="0 0 390 844" preserveAspectRatio="xMidYMid slice" aria-hidden="true"><g fill="none" stroke="#1E6E8C" stroke-width="1.2" opacity=".14"><rect x="284" y="104" width="34" height="34" rx="9"/><rect x="330" y="104" width="34" height="34" rx="9"/><rect x="284" y="150" width="34" height="34" rx="9"/><rect x="330" y="150" width="34" height="34" rx="9"/></g><path d="M0 700 C60 686 120 710 180 700 C240 690 300 712 390 700" fill="none" stroke="#2E5F73" stroke-width="1.3" opacity="0.24"/><g stroke="#2E5F73" fill="none" stroke-linecap="round" opacity="0.187"><path d="M28 726 C66 718 104 718 142 726" stroke-width="1.0"/><path d="M198 744 C236 736 274 736 312 744" stroke-width="0.9"/><path d="M66 764 C104 756 142 756 180 764" stroke-width="0.8"/><path d="M224 786 C262 778 300 778 338 786" stroke-width="0.7"/></g><path d="M376 848 C374 789 369 751 368 730 C365 763 378 796 379 848 Z" fill="#7E6E44" opacity="0.24"/><ellipse cx="368" cy="734" rx="2.7" ry="9.5" fill="#7E6E44" opacity="0.216" transform="rotate(-8 368 734)"/><path d="M357 848 C358 800 368 769 367 752 C364 778 362 805 360 848 Z" fill="#7E6E44" opacity="0.24"/><ellipse cx="367" cy="756" rx="2.7" ry="9.5" fill="#7E6E44" opacity="0.216" transform="rotate(-8 367 756)"/><path d="M339 848 C336 783 330 741 329 718 C326 754 340 790 342 848 Z" fill="#7E6E44" opacity="0.24"/><ellipse cx="329" cy="722" rx="2.7" ry="9.5" fill="#7E6E44" opacity="0.216" transform="rotate(-8 329 722)"/><path d="M320 848 C321 804 329 775 328 760 C325 784 325 809 323 848 Z" fill="#7E6E44" opacity="0.24"/><ellipse cx="328" cy="764" rx="2.7" ry="9.5" fill="#7E6E44" opacity="0.216" transform="rotate(-8 328 764)"/></svg>
     <p class="label a d1">活动构成</p>
-    <h2 class="serif a d2" style="margin:16px 0 22px">三大板块</h2>
+    <h2 class="serif a d2" style="margin:14px 0 18px">四大板块</h2>
     <div class="plates">
-      <a class="plate link a d3" href="#s6" data-go="6"><i class="pulse">01</i><div><b>云端观鸟</b><p>24 小时慢直播与 AI 识鸟，线上先聚人</p></div><span class="go">→</span></a>
-      <a class="plate link a d4" href="#s7" data-go="7"><i class="pulse">02</i><div><b>生态市集</b><p>本地生态产品与文创摊位，把流量变消费</p></div><span class="go">→</span></a>
-      <a class="plate link a d5" href="#s8" data-go="8"><i class="pulse">03</i><div><b>湿地研学</b><p>面向亲子与学校的自然教育课程</p></div><span class="go">→</span></a>
+      <a class="plate link a d3" href="#s7" data-go="7"><i class="pulse">01</i><div><b>云端观鸟</b><p>24 小时慢直播与 AI 识鸟，线上先聚人</p></div><span class="go">→</span></a>
+      <a class="plate link a d4" href="#s8" data-go="8"><i class="pulse">02</i><div><b>生态市集</b><p>本地生态产品与文创摊位，把流量变消费</p></div><span class="go">→</span></a>
+      <a class="plate link a d5" href="#s9" data-go="9"><i class="pulse">03</i><div><b>湿地研学</b><p>面向亲子与学校的自然教育课程</p></div><span class="go">→</span></a>
+      <a class="plate link a d6" href="#s10" data-go="10"><i class="pulse">04</i><div><b>展贸对接</b><p>生态产品对接外部采购商，线上展贸馆常年开放</p></div><span class="go">→</span></a>
     </div>
-    <div class="idx">05</div>
+    <div class="idx">6</div>
   </section>
 
   <!-- 06 云端观鸟 | 动画：手机滑入 + 扫描线循环 + 落日渐显 + 三条功能 -->
-  <section class="screen">
-    <a class="back a d1" href="#s5" data-go="5">← 返回三大板块</a>
+  <section class="screen wash-cool">
+    <svg class="bgfx" viewBox="0 0 390 844" preserveAspectRatio="xMidYMid slice" aria-hidden="true"><g color="#2E5F73" opacity="0.26"><g transform="translate(48,148) scale(1.0)"><path d="M0 8 C7 0 14 0 21 8 C28 0 35 0 42 8" fill="none" stroke="currentColor" stroke-width="0.95" stroke-linecap="round"/></g><g transform="translate(78,163) scale(0.82)"><path d="M0 8 C7 0 14 0 21 8 C28 0 35 0 42 8" fill="none" stroke="currentColor" stroke-width="0.8" stroke-linecap="round"/></g><g transform="translate(105,139) scale(0.72)"><path d="M0 8 C7 0 14 0 21 8 C28 0 35 0 42 8" fill="none" stroke="currentColor" stroke-width="0.72" stroke-linecap="round"/></g><g transform="translate(133,157) scale(0.62)"><path d="M0 8 C7 0 14 0 21 8 C28 0 35 0 42 8" fill="none" stroke="currentColor" stroke-width="0.65" stroke-linecap="round"/></g><g transform="translate(158,143) scale(0.55)"><path d="M0 8 C7 0 14 0 21 8 C28 0 35 0 42 8" fill="none" stroke="currentColor" stroke-width="0.6" stroke-linecap="round"/></g></g><path d="M0 742 C60 728 120 752 180 742 C240 732 300 754 390 742" fill="none" stroke="#2E5F73" stroke-width="1.3" opacity="0.22"/><g stroke="#2E5F73" fill="none" stroke-linecap="round" opacity="0.172"><path d="M28 768 C66 760 104 760 142 768" stroke-width="1.0"/><path d="M198 786 C236 778 274 778 312 786" stroke-width="0.9"/><path d="M66 806 C104 798 142 798 180 806" stroke-width="0.8"/><path d="M224 828 C262 820 300 820 338 828" stroke-width="0.7"/></g></svg>
+    <a class="back a d1" href="#s6" data-go="6">← 返回板块总览</a>
     <p class="label a d1" style="text-align:center">板块一</p>
     <h2 class="serif a d2" style="margin:14px 0 24px;text-align:center">云端观鸟</h2>
     <div class="phone zoom a d3">
       <div class="scr">
-        <div class="sunset"></div>
-        <div class="land"></div>
-        <svg class="drift" width="150" height="26" viewBox="0 0 150 26" fill="none" style="bottom:56px;left:18px;color:#F4F0E7;opacity:.9">
-          <path d="M2 12C9 4 16 4 23 12C30 4 37 4 44 12" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
-          <path d="M58 20C64 14 70 14 76 20C82 14 88 14 94 20" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" opacity=".7"/>
-        </svg>
+        <div class="live"><svg class="art" viewBox="0 0 480 720" preserveAspectRatio="xMidYMid slice" role="img" aria-label="南矶湿地实时画面"><defs><linearGradient id="skyC" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#BED9E4"/><stop offset=".55" stop-color="#DCE7EA"/><stop offset="1" stop-color="#EDE9DD"/></linearGradient><linearGradient id="watC" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#8FB8CA"/><stop offset="1" stop-color="#C6DAE0"/></linearGradient></defs><rect width="480" height="720" fill="url(#skyC)"/><circle cx="360" cy="150" r="52" fill="#DE8438" opacity=".20"/><path d="M0 300 C70 276 130 262 200 278 C280 296 340 316 420 306 C452 302 470 296 480 292 L480 340 L0 340 Z" fill="#3E6C82" opacity=".16"/><rect y="318" width="480" height="402" fill="url(#watC)"/><g stroke="#2E5F73" fill="none" opacity=".24" stroke-linecap="round"><path d="M40 372 C96 362 152 362 208 372" stroke-width="1.6"/><path d="M240 410 C296 400 352 400 408 410" stroke-width="1.4"/><path d="M60 456 C116 446 172 446 228 456" stroke-width="1.3"/><path d="M260 500 C316 490 372 490 428 500" stroke-width="1.2"/><path d="M30 548 C86 538 142 538 198 548" stroke-width="1.1"/><path d="M250 600 C306 590 362 590 418 600" stroke-width="1"/></g><g transform="translate(150,470) scale(0.7,0.7)"><g stroke="#B0684A" stroke-width="2.4" stroke-linecap="round" fill="none"><path d="M-2 12 L-5 36"/><path d="M6 12 L9 36"/><path d="M-5 36 L2 37"/><path d="M9 36 L16 37"/></g><ellipse cx="0" cy="0" rx="22" ry="13" fill="#F8F6F0"/><path d="M14 2 C24 8 30 16 27 21 C22 15 17 10 12 7 Z" fill="#2E3B45"/><path d="M-7 -5 C6 -13 20 -11 27 -1 C16 -4 3 -4 -7 -1 Z" fill="#E7E2D6"/><path d="M12 -6 C22 -8 30 -3 30 4 C22 -1 17 -3 12 -3 Z" fill="#2E3B45"/><path d="M-16 -7 C-25 -13 -29 -23 -29 -33" stroke="#F8F6F0" stroke-width="7" fill="none" stroke-linecap="round"/><circle cx="-30" cy="-36" r="5.8" fill="#F8F6F0"/><path d="M-32 -41 C-27 -43 -22 -41 -23 -37 C-27 -39 -30 -40 -32 -41 Z" fill="#C8452F"/><path d="M-35 -36 L-49 -34 L-35 -31 Z" fill="#3A3A3A"/></g><g transform="translate(300,232) rotate(-6) scale(0.62,0.62)"><path d="M-4 -1 C-26 -16 -52 -24 -76 -21 C-54 -8 -28 1 -4 3 Z" fill="#F8F6F0"/><path d="M-76 -21 C-64 -25 -50 -25 -40 -22 C-52 -17 -64 -17 -76 -21 Z" fill="#2E3B45"/><path d="M-4 -1 C-22 12 -42 22 -62 27 C-44 14 -24 5 -4 3 Z" fill="#E7E2D6"/><ellipse cx="8" cy="0" rx="19" ry="8.5" fill="#F8F6F0"/><path d="M24 -1 C34 -5 42 -7 50 -7" stroke="#F8F6F0" stroke-width="5" fill="none" stroke-linecap="round"/><circle cx="52" cy="-7" r="4.6" fill="#F8F6F0"/><path d="M56 -7 L68 -5.6 L56 -4.2 Z" fill="#3A3A3A"/><path d="M16 4 C26 8 36 10 44 10" stroke="#B0684A" stroke-width="1.8" fill="none" stroke-linecap="round"/></g><g transform="translate(150,300) rotate(8) scale(0.42,0.42)"><path d="M-4 -1 C-26 -16 -52 -24 -76 -21 C-54 -8 -28 1 -4 3 Z" fill="#F8F6F0"/><path d="M-76 -21 C-64 -25 -50 -25 -40 -22 C-52 -17 -64 -17 -76 -21 Z" fill="#2E3B45"/><path d="M-4 -1 C-22 12 -42 22 -62 27 C-44 14 -24 5 -4 3 Z" fill="#E7E2D6"/><ellipse cx="8" cy="0" rx="19" ry="8.5" fill="#F8F6F0"/><path d="M24 -1 C34 -5 42 -7 50 -7" stroke="#F8F6F0" stroke-width="5" fill="none" stroke-linecap="round"/><circle cx="52" cy="-7" r="4.6" fill="#F8F6F0"/><path d="M56 -7 L68 -5.6 L56 -4.2 Z" fill="#3A3A3A"/><path d="M16 4 C26 8 36 10 44 10" stroke="#B0684A" stroke-width="1.8" fill="none" stroke-linecap="round"/></g><g transform="translate(400,720) scale(-0.95,0.95)" opacity="0.6"><path d="M-2 0 C0 -60 10 -98 12 -120 C14 -86 4 -52 2 0 Z" fill="#8C7A4B"/><ellipse cx="12" cy="-117" rx="2.8" ry="10" fill="#8C7A4B" transform="rotate(12 12 -117)"/><path d="M16 0 C14 -48 7 -78 9 -96 C11 -69 18 -42 20 0 Z" fill="#8C7A4B"/><ellipse cx="9" cy="-93" rx="2.8" ry="10" fill="#8C7A4B" transform="rotate(-9 9 -93)"/><path d="M34 0 C36 -66 48 -108 50 -132 C52 -95 40 -58 38 0 Z" fill="#8C7A4B"/><ellipse cx="50" cy="-129" rx="2.8" ry="10" fill="#8C7A4B" transform="rotate(14 50 -129)"/><path d="M52 0 C50 -44 45 -72 47 -88 C49 -63 54 -38 56 0 Z" fill="#8C7A4B"/><ellipse cx="47" cy="-85" rx="2.8" ry="10" fill="#8C7A4B" transform="rotate(-7 47 -85)"/><path d="M68 0 C69 -54 77 -88 79 -108 C81 -77 73 -47 72 0 Z" fill="#8C7A4B"/><ellipse cx="79" cy="-105" rx="2.8" ry="10" fill="#8C7A4B" transform="rotate(9 79 -105)"/></g><g opacity=".45"><path d="M0 240 L480 240" stroke="#F8F6F0" stroke-width="1" opacity=".28"/><path d="M0 480 L480 480" stroke="#F8F6F0" stroke-width="1" opacity=".20"/><path d="M120 0 L120 720" stroke="#F8F6F0" stroke-width="1" opacity=".16"/><path d="M360 0 L360 720" stroke="#F8F6F0" stroke-width="1" opacity=".16"/></g></svg></div>
         <div class="rec"><em class="pulse"></em>LIVE 南矶湿地</div>
         <div class="scan" style="position:absolute;left:0;right:0;top:50%;height:2px;
           background:linear-gradient(90deg,transparent,rgba(255,255,255,.9),transparent)"></div>
+        <div class="live-bar"><i></i></div>
       </div>
     </div>
     <div class="plates">
@@ -315,40 +406,59 @@ h2{font-size:33px;line-height:1.3;font-weight:700;letter-spacing:.01em;}
       <div class="plate a d5"><i>02</i><div><b>AI 识鸟</b><p>上传照片即可识别鸟种并生成观鸟记录</p></div></div>
       <div class="plate a d6"><i>03</i><div><b>云端守护</b><p>线上认养一块湿地，获得年度观鸟报告</p></div></div>
     </div>
-    <div class="idx">06</div>
+    <div class="idx">7</div>
   </section>
 
   <!-- 07 生态市集 | 动画：标题 + 四格错峰入场 -->
-  <section class="screen">
-    <a class="back a d1" href="#s5" data-go="5">← 返回三大板块</a>
+  <section class="screen wash-warm">
+    <svg class="bgfx" viewBox="0 0 390 844" preserveAspectRatio="xMidYMid slice" aria-hidden="true"><g fill="none" stroke="#C98B45" stroke-width="1.2" opacity=".20"><path d="M6 816 L6 786 L40 758 L74 786 L74 816"/><path d="M84 816 L84 786 L118 758 L152 786 L152 816"/><path d="M162 816 L162 786 L196 758 L230 786 L230 816"/><path d="M240 816 L240 786 L274 758 L308 786 L308 816"/><path d="M318 816 L318 786 L352 758 L386 786 L386 816"/></g><g color="#2E5F73" opacity="0.24"><g transform="translate(288,150) scale(1.0)"><path d="M0 8 C7 0 14 0 21 8 C28 0 35 0 42 8" fill="none" stroke="currentColor" stroke-width="0.95" stroke-linecap="round"/></g><g transform="translate(318,165) scale(0.82)"><path d="M0 8 C7 0 14 0 21 8 C28 0 35 0 42 8" fill="none" stroke="currentColor" stroke-width="0.8" stroke-linecap="round"/></g><g transform="translate(345,141) scale(0.72)"><path d="M0 8 C7 0 14 0 21 8 C28 0 35 0 42 8" fill="none" stroke="currentColor" stroke-width="0.72" stroke-linecap="round"/></g><g transform="translate(373,159) scale(0.62)"><path d="M0 8 C7 0 14 0 21 8 C28 0 35 0 42 8" fill="none" stroke="currentColor" stroke-width="0.65" stroke-linecap="round"/></g><g transform="translate(398,145) scale(0.55)"><path d="M0 8 C7 0 14 0 21 8 C28 0 35 0 42 8" fill="none" stroke="currentColor" stroke-width="0.6" stroke-linecap="round"/></g></g></svg>
+    <a class="back a d1" href="#s6" data-go="6">← 返回板块总览</a>
     <p class="label a d1">板块二</p>
     <h2 class="serif a d2" style="margin:16px 0 20px">生态市集</h2>
     <div class="grid">
-      <div class="cell a d3"><b>有机大米</b><p>湖区周边生态种植</p></div>
-      <div class="cell a d4"><b>山茶油</b><p>本地油茶压榨</p></div>
-      <div class="cell a d5"><b>芦苇编织</b><p>非遗手艺与再生材料</p></div>
-      <div class="cell a d6"><b>候鸟文创</b><p>徽章、望远镜挂饰</p></div>
+      <button class="cell a d3" type="button" data-item="rice"><b>有机大米</b><p>湖区周边生态种植</p></button>
+      <button class="cell a d4" type="button" data-item="oil"><b>山茶油</b><p>本地油茶压榨</p></button>
+      <button class="cell a d5" type="button" data-item="weave"><b>芦苇编织</b><p>非遗手艺与再生材料</p></button>
+      <button class="cell a d6" type="button" data-item="merch"><b>候鸟文创</b><p>徽章、望远镜挂饰</p></button>
     </div>
     <p class="meta a d7" style="margin-top:20px">全部摊位采用可循环展具，展后统一回收</p>
-    <div class="idx">07</div>
+    <div class="idx">8</div>
   </section>
 
   <!-- 08 湿地研学 | 动画：返回按钮 + 标题 + 三块依次入场 -->
-  <section class="screen">
-    <a class="back a d1" href="#s5" data-go="5">← 返回三大板块</a>
+  <section class="screen wash-mint">
+    <svg class="bgfx" viewBox="0 0 390 844" preserveAspectRatio="xMidYMid slice" aria-hidden="true"><g color="#2E5F73" opacity="0.22"><g transform="translate(298,158) scale(1.0)"><path d="M0 8 C7 0 14 0 21 8 C28 0 35 0 42 8" fill="none" stroke="currentColor" stroke-width="0.95" stroke-linecap="round"/></g><g transform="translate(328,173) scale(0.82)"><path d="M0 8 C7 0 14 0 21 8 C28 0 35 0 42 8" fill="none" stroke="currentColor" stroke-width="0.8" stroke-linecap="round"/></g><g transform="translate(355,149) scale(0.72)"><path d="M0 8 C7 0 14 0 21 8 C28 0 35 0 42 8" fill="none" stroke="currentColor" stroke-width="0.72" stroke-linecap="round"/></g><g transform="translate(383,167) scale(0.62)"><path d="M0 8 C7 0 14 0 21 8 C28 0 35 0 42 8" fill="none" stroke="currentColor" stroke-width="0.65" stroke-linecap="round"/></g><g transform="translate(408,153) scale(0.55)"><path d="M0 8 C7 0 14 0 21 8 C28 0 35 0 42 8" fill="none" stroke="currentColor" stroke-width="0.6" stroke-linecap="round"/></g></g><path d="M0 766 C60 752 120 776 180 766 C240 756 300 778 390 766" fill="none" stroke="#2E5F73" stroke-width="1.3" opacity="0.2"/><g stroke="#2E5F73" fill="none" stroke-linecap="round" opacity="0.156"><path d="M28 792 C66 784 104 784 142 792" stroke-width="1.0"/><path d="M198 810 C236 802 274 802 312 810" stroke-width="0.9"/><path d="M66 830 C104 822 142 822 180 830" stroke-width="0.8"/><path d="M224 852 C262 844 300 844 338 852" stroke-width="0.7"/></g><path d="M18 848 C20 789 28 751 30 730 C32 763 24 796 21 848 Z" fill="#7E6E44" opacity="0.2"/><ellipse cx="30" cy="734" rx="2.7" ry="9.5" fill="#7E6E44" opacity="0.18" transform="rotate(8 30 734)"/><path d="M37 848 C35 800 29 769 31 752 C33 778 39 805 40 848 Z" fill="#7E6E44" opacity="0.2"/><ellipse cx="31" cy="756" rx="2.7" ry="9.5" fill="#7E6E44" opacity="0.18" transform="rotate(8 31 756)"/><path d="M55 848 C57 783 67 741 69 718 C71 754 61 790 58 848 Z" fill="#7E6E44" opacity="0.2"/><ellipse cx="69" cy="722" rx="2.7" ry="9.5" fill="#7E6E44" opacity="0.18" transform="rotate(8 69 722)"/><path d="M74 848 C72 804 68 775 70 760 C72 784 76 809 77 848 Z" fill="#7E6E44" opacity="0.2"/><ellipse cx="70" cy="764" rx="2.7" ry="9.5" fill="#7E6E44" opacity="0.18" transform="rotate(8 70 764)"/></svg>
+    <a class="back a d1" href="#s6" data-go="6">← 返回板块总览</a>
     <p class="label a d1" style="text-align:center">板块三</p>
     <h2 class="serif a d2" style="margin:14px 0 24px;text-align:center">湿地研学</h2>
+    <div class="band zoom a d3"><svg class="art" viewBox="0 0 800 300" preserveAspectRatio="xMidYMid slice" role="img" aria-label="湿地里的白鹤与芦苇"><defs><linearGradient id="skyB" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#E4EDEF"/><stop offset="1" stop-color="#F4F1E8"/></linearGradient><linearGradient id="watB" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#9DC2D2"/><stop offset="1" stop-color="#CFE0E4"/></linearGradient></defs><rect width="800" height="300" fill="url(#skyB)"/><path d="M0 150 C110 122 190 106 280 126 C380 148 450 172 540 160 C630 148 700 122 800 136 L800 186 L0 186 Z" fill="#3E6C82" opacity=".14"/><rect y="168" width="800" height="132" fill="url(#watB)"/><g stroke="#2E5F73" fill="none" opacity=".22" stroke-linecap="round"><path d="M80 208 C140 198 200 198 260 208" stroke-width="1.5"/><path d="M360 226 C420 216 480 216 540 226" stroke-width="1.3"/><path d="M140 252 C200 242 260 242 320 252" stroke-width="1.2"/></g><ellipse cx="250" cy="246" rx="120" ry="9" fill="#2FA98C" opacity=".10"/><ellipse cx="560" cy="266" rx="140" ry="10" fill="#2FA98C" opacity=".10"/><g transform="translate(250,216) scale(0.92,0.92)"><g stroke="#B0684A" stroke-width="2.4" stroke-linecap="round" fill="none"><path d="M-2 12 L-5 36"/><path d="M6 12 L9 36"/><path d="M-5 36 L2 37"/><path d="M9 36 L16 37"/></g><ellipse cx="0" cy="0" rx="22" ry="13" fill="#F8F6F0"/><path d="M14 2 C24 8 30 16 27 21 C22 15 17 10 12 7 Z" fill="#2E3B45"/><path d="M-7 -5 C6 -13 20 -11 27 -1 C16 -4 3 -4 -7 -1 Z" fill="#E7E2D6"/><path d="M12 -6 C22 -8 30 -3 30 4 C22 -1 17 -3 12 -3 Z" fill="#2E3B45"/><path d="M-16 -7 C-25 -13 -29 -23 -29 -33" stroke="#F8F6F0" stroke-width="7" fill="none" stroke-linecap="round"/><circle cx="-30" cy="-36" r="5.8" fill="#F8F6F0"/><path d="M-32 -41 C-27 -43 -22 -41 -23 -37 C-27 -39 -30 -40 -32 -41 Z" fill="#C8452F"/><path d="M-35 -36 L-49 -34 L-35 -31 Z" fill="#3A3A3A"/></g><g transform="translate(560,236) scale(-1.06,1.06)"><g stroke="#B0684A" stroke-width="2.4" stroke-linecap="round" fill="none"><path d="M-2 12 L-5 36"/><path d="M6 12 L9 36"/><path d="M-5 36 L2 37"/><path d="M9 36 L16 37"/></g><ellipse cx="0" cy="0" rx="22" ry="13" fill="#F8F6F0"/><path d="M14 2 C24 8 30 16 27 21 C22 15 17 10 12 7 Z" fill="#2E3B45"/><path d="M-7 -5 C6 -13 20 -11 27 -1 C16 -4 3 -4 -7 -1 Z" fill="#E7E2D6"/><path d="M12 -6 C22 -8 30 -3 30 4 C22 -1 17 -3 12 -3 Z" fill="#2E3B45"/><path d="M-16 -7 C-25 -13 -29 -23 -29 -33" stroke="#F8F6F0" stroke-width="7" fill="none" stroke-linecap="round"/><circle cx="-30" cy="-36" r="5.8" fill="#F8F6F0"/><path d="M-32 -41 C-27 -43 -22 -41 -23 -37 C-27 -39 -30 -40 -32 -41 Z" fill="#C8452F"/><path d="M-35 -36 L-49 -34 L-35 -31 Z" fill="#3A3A3A"/></g><g transform="translate(650,96) rotate(-6) scale(0.5,0.5)"><path d="M-4 -1 C-26 -16 -52 -24 -76 -21 C-54 -8 -28 1 -4 3 Z" fill="#F8F6F0"/><path d="M-76 -21 C-64 -25 -50 -25 -40 -22 C-52 -17 -64 -17 -76 -21 Z" fill="#2E3B45"/><path d="M-4 -1 C-22 12 -42 22 -62 27 C-44 14 -24 5 -4 3 Z" fill="#E7E2D6"/><ellipse cx="8" cy="0" rx="19" ry="8.5" fill="#F8F6F0"/><path d="M24 -1 C34 -5 42 -7 50 -7" stroke="#F8F6F0" stroke-width="5" fill="none" stroke-linecap="round"/><circle cx="52" cy="-7" r="4.6" fill="#F8F6F0"/><path d="M56 -7 L68 -5.6 L56 -4.2 Z" fill="#3A3A3A"/><path d="M16 4 C26 8 36 10 44 10" stroke="#B0684A" stroke-width="1.8" fill="none" stroke-linecap="round"/></g><g transform="translate(430,74) rotate(6) scale(0.38,0.38)"><path d="M-4 -1 C-26 -16 -52 -24 -76 -21 C-54 -8 -28 1 -4 3 Z" fill="#F8F6F0"/><path d="M-76 -21 C-64 -25 -50 -25 -40 -22 C-52 -17 -64 -17 -76 -21 Z" fill="#2E3B45"/><path d="M-4 -1 C-22 12 -42 22 -62 27 C-44 14 -24 5 -4 3 Z" fill="#E7E2D6"/><ellipse cx="8" cy="0" rx="19" ry="8.5" fill="#F8F6F0"/><path d="M24 -1 C34 -5 42 -7 50 -7" stroke="#F8F6F0" stroke-width="5" fill="none" stroke-linecap="round"/><circle cx="52" cy="-7" r="4.6" fill="#F8F6F0"/><path d="M56 -7 L68 -5.6 L56 -4.2 Z" fill="#3A3A3A"/><path d="M16 4 C26 8 36 10 44 10" stroke="#B0684A" stroke-width="1.8" fill="none" stroke-linecap="round"/></g><g transform="translate(60,300) scale(0.9,0.9)" opacity="0.72"><path d="M-2 0 C0 -60 10 -98 12 -120 C14 -86 4 -52 2 0 Z" fill="#8C7A4B"/><ellipse cx="12" cy="-117" rx="2.8" ry="10" fill="#8C7A4B" transform="rotate(12 12 -117)"/><path d="M16 0 C14 -48 7 -78 9 -96 C11 -69 18 -42 20 0 Z" fill="#8C7A4B"/><ellipse cx="9" cy="-93" rx="2.8" ry="10" fill="#8C7A4B" transform="rotate(-9 9 -93)"/><path d="M34 0 C36 -66 48 -108 50 -132 C52 -95 40 -58 38 0 Z" fill="#8C7A4B"/><ellipse cx="50" cy="-129" rx="2.8" ry="10" fill="#8C7A4B" transform="rotate(14 50 -129)"/><path d="M52 0 C50 -44 45 -72 47 -88 C49 -63 54 -38 56 0 Z" fill="#8C7A4B"/><ellipse cx="47" cy="-85" rx="2.8" ry="10" fill="#8C7A4B" transform="rotate(-7 47 -85)"/><path d="M68 0 C69 -54 77 -88 79 -108 C81 -77 73 -47 72 0 Z" fill="#8C7A4B"/><ellipse cx="79" cy="-105" rx="2.8" ry="10" fill="#8C7A4B" transform="rotate(9 79 -105)"/></g><g transform="translate(760,300) scale(-0.95,0.95)" opacity="0.72"><path d="M-2 0 C0 -60 10 -98 12 -120 C14 -86 4 -52 2 0 Z" fill="#8C7A4B"/><ellipse cx="12" cy="-117" rx="2.8" ry="10" fill="#8C7A4B" transform="rotate(12 12 -117)"/><path d="M16 0 C14 -48 7 -78 9 -96 C11 -69 18 -42 20 0 Z" fill="#8C7A4B"/><ellipse cx="9" cy="-93" rx="2.8" ry="10" fill="#8C7A4B" transform="rotate(-9 9 -93)"/><path d="M34 0 C36 -66 48 -108 50 -132 C52 -95 40 -58 38 0 Z" fill="#8C7A4B"/><ellipse cx="50" cy="-129" rx="2.8" ry="10" fill="#8C7A4B" transform="rotate(14 50 -129)"/><path d="M52 0 C50 -44 45 -72 47 -88 C49 -63 54 -38 56 0 Z" fill="#8C7A4B"/><ellipse cx="47" cy="-85" rx="2.8" ry="10" fill="#8C7A4B" transform="rotate(-7 47 -85)"/><path d="M68 0 C69 -54 77 -88 79 -108 C81 -77 73 -47 72 0 Z" fill="#8C7A4B"/><ellipse cx="79" cy="-105" rx="2.8" ry="10" fill="#8C7A4B" transform="rotate(9 79 -105)"/></g></svg></div>
     <div class="plates">
       <div class="plate a d3"><i>01</i><div><b>自然教育课程</b><p>湿地生态、候鸟迁徙与鸟类识别的分级课程</p></div></div>
       <div class="plate a d4"><i>02</i><div><b>观鸟领队体验</b><p>跟随本地领队进入保护区，学习观测与记录方法</p></div></div>
       <div class="plate a d5"><i>03</i><div><b>学校定制研学</b><p>按学段设计半日或一日线路，配师资与学习手册</p></div></div>
     </div>
     <p class="meta a d6" style="margin-top:20px">研学收益的一部分用于湿地巡护与候鸟保护</p>
-    <div class="idx">08</div>
+    <div class="idx">9</div>
   </section>
 
-  <!-- 09 谁来参加 | 动画：标题 + 标签依次弹出 -->
-  <section class="screen">
+  <!-- 09 展贸对接 | 动画：返回按钮 + 标题 + 三块依次入场 -->
+  <section class="screen wash-cool">
+    <svg class="bgfx" viewBox="0 0 390 844" preserveAspectRatio="xMidYMid slice" aria-hidden="true"><g transform="translate(0,-572)"><g fill="none" stroke="#1E6E8C" opacity=".18"><path d="M-10 726 C120 660 260 656 400 720" stroke-width="1.3" stroke-dasharray="5 9"/><path d="M-10 780 C140 726 240 730 400 782" stroke-width="1.2" stroke-dasharray="5 9"/></g><g fill="#1E6E8C" opacity=".22"><circle cx="58" cy="700" r="3.8"/><circle cx="200" cy="670" r="3.8"/><circle cx="342" cy="700" r="3.8"/></g></g><g transform="translate(0,32)"><path d="M0 690 C40 664 70 650 108 662 C150 676 178 700 214 690 C252 680 280 654 318 660 C348 665 372 684 390 692 L390 790 L0 790 Z" fill="#3E6C82" opacity=".13"/><path d="M0 716 C36 700 74 690 112 700 C152 711 186 730 226 722 C266 714 300 696 340 702 C364 706 380 716 390 722 L390 806 L0 806 Z" fill="#2E5F73" opacity=".11"/></g><path d="M0 752 C60 738 120 762 180 752 C240 742 300 764 390 752" fill="none" stroke="#2E5F73" stroke-width="1.3" opacity="0.22"/><g stroke="#2E5F73" fill="none" stroke-linecap="round" opacity="0.172"><path d="M28 778 C66 770 104 770 142 778" stroke-width="1.0"/><path d="M198 796 C236 788 274 788 312 796" stroke-width="0.9"/><path d="M66 816 C104 808 142 808 180 816" stroke-width="0.8"/><path d="M224 838 C262 830 300 830 338 838" stroke-width="0.7"/></g></svg>
+    <a class="back a d1" href="#s6" data-go="6">← 返回板块总览</a>
+    <p class="label a d1" style="text-align:center">板块四</p>
+    <h2 class="serif a d2" style="margin:14px 0 24px;text-align:center">展贸对接</h2>
+    <div class="plates">
+      <div class="plate a d3"><i>01</i><div><b>线上展贸馆</b><p>生态产品常年在线陈列，外部采购商可在线询盘与取样</p></div></div>
+      <div class="plate a d4"><i>02</i><div><b>采购商定向邀约</b><p>面向长三角、粤港澳的商超与跨境卖家发出定向邀约</p></div></div>
+      <div class="plate a d5"><i>03</i><div><b>产地直采撮合</b><p>现场看样洽谈，产地直发，缩短中间流通环节</p></div></div>
+    </div>
+    <p class="meta a d6" style="margin-top:20px">把观鸟季带来的人气，沉淀为可持续的订单</p>
+    <div class="idx">10</div>
+  </section>
+
+  <!-- 10 谁来参加 | 动画：标题 + 标签依次弹出 -->
+  <section class="screen wash-warm">
+    <svg class="bgfx" viewBox="0 0 390 844" preserveAspectRatio="xMidYMid slice" aria-hidden="true"><g color="#2E5F73" opacity="0.24"><g transform="translate(40,150) scale(1.0)"><path d="M0 8 C7 0 14 0 21 8 C28 0 35 0 42 8" fill="none" stroke="currentColor" stroke-width="0.9" stroke-linecap="round"/></g><g transform="translate(86,172) scale(0.86)"><path d="M0 8 C7 0 14 0 21 8 C28 0 35 0 42 8" fill="none" stroke="currentColor" stroke-width="0.8" stroke-linecap="round"/></g><g transform="translate(136,136) scale(0.75)"><path d="M0 8 C7 0 14 0 21 8 C28 0 35 0 42 8" fill="none" stroke="currentColor" stroke-width="0.72" stroke-linecap="round"/></g><g transform="translate(190,166) scale(0.66)"><path d="M0 8 C7 0 14 0 21 8 C28 0 35 0 42 8" fill="none" stroke="currentColor" stroke-width="0.66" stroke-linecap="round"/></g><g transform="translate(246,140) scale(0.58)"><path d="M0 8 C7 0 14 0 21 8 C28 0 35 0 42 8" fill="none" stroke="currentColor" stroke-width="0.6" stroke-linecap="round"/></g><g transform="translate(298,168) scale(0.5)"><path d="M0 8 C7 0 14 0 21 8 C28 0 35 0 42 8" fill="none" stroke="currentColor" stroke-width="0.55" stroke-linecap="round"/></g></g><path d="M0 772 C60 758 120 782 180 772 C240 762 300 784 390 772" fill="none" stroke="#2E5F73" stroke-width="1.3" opacity="0.2"/><g stroke="#2E5F73" fill="none" stroke-linecap="round" opacity="0.156"><path d="M28 798 C66 790 104 790 142 798" stroke-width="1.0"/><path d="M198 816 C236 808 274 808 312 816" stroke-width="0.9"/><path d="M66 836 C104 828 142 828 180 836" stroke-width="0.8"/><path d="M224 858 C262 850 300 850 338 858" stroke-width="0.7"/></g></svg>
     <p class="label a d1">参与者</p>
     <h2 class="serif a d2" style="margin:16px 0 20px">谁会来这里</h2>
     <div class="tags">
@@ -362,11 +472,12 @@ h2{font-size:33px;line-height:1.3;font-weight:700;letter-spacing:.01em;}
       <span class="tag a d6">环保公益组织</span>
     </div>
     <p class="meta a d7" style="margin-top:22px">线上线下同步招募，线上以直播与社群为主</p>
-    <div class="idx">09</div>
+    <div class="idx">11</div>
   </section>
 
   <!-- 09 三天日程 | 动画：标题 + 三天依次入场 -->
-  <section class="screen">
+  <section class="screen wash-cool">
+    <svg class="bgfx" viewBox="0 0 390 844" preserveAspectRatio="xMidYMid slice" aria-hidden="true"><g stroke="#1E6E8C" opacity=".18"><path d="M22 220 L22 700" stroke-width="1" stroke-dasharray="4 8"/></g><g fill="#1E6E8C" opacity=".22"><circle cx="22" cy="300" r="3.6"/><circle cx="22" cy="450" r="3.6"/><circle cx="22" cy="600" r="3.6"/></g><path d="M372 848 C370 789 365 751 364 730 C361 763 374 796 375 848 Z" fill="#7E6E44" opacity="0.26"/><ellipse cx="364" cy="734" rx="2.7" ry="9.5" fill="#7E6E44" opacity="0.234" transform="rotate(-8 364 734)"/><path d="M353 848 C354 800 364 769 363 752 C360 778 358 805 356 848 Z" fill="#7E6E44" opacity="0.26"/><ellipse cx="363" cy="756" rx="2.7" ry="9.5" fill="#7E6E44" opacity="0.234" transform="rotate(-8 363 756)"/><path d="M335 848 C332 783 326 741 325 718 C322 754 336 790 338 848 Z" fill="#7E6E44" opacity="0.26"/><ellipse cx="325" cy="722" rx="2.7" ry="9.5" fill="#7E6E44" opacity="0.234" transform="rotate(-8 325 722)"/><path d="M316 848 C317 804 325 775 324 760 C321 784 321 809 319 848 Z" fill="#7E6E44" opacity="0.26"/><ellipse cx="324" cy="764" rx="2.7" ry="9.5" fill="#7E6E44" opacity="0.234" transform="rotate(-8 324 764)"/><path d="M0 780 C60 766 120 790 180 780 C240 770 300 792 390 780" fill="none" stroke="#2E5F73" stroke-width="1.3" opacity="0.22"/><g stroke="#2E5F73" fill="none" stroke-linecap="round" opacity="0.172"><path d="M28 806 C66 798 104 798 142 806" stroke-width="1.0"/><path d="M198 824 C236 816 274 816 312 824" stroke-width="0.9"/><path d="M66 844 C104 836 142 836 180 844" stroke-width="0.8"/><path d="M224 866 C262 858 300 858 338 866" stroke-width="0.7"/></g></svg>
     <p class="label a d1">日程</p>
     <h2 class="serif a d2" style="margin:16px 0 14px">三天怎么安排</h2>
     <div>
@@ -374,11 +485,12 @@ h2{font-size:33px;line-height:1.3;font-weight:700;letter-spacing:.01em;}
       <div class="day a d4"><div class="d">DAY 2</div><div class="c"><b>生态市集与对接</b><p>生态产品展销，品牌与渠道商现场洽谈</p></div></div>
       <div class="day a d5"><div class="d">DAY 3</div><div class="c"><b>研学与公众开放</b><p>自然教育课程、观鸟领队体验、文创发布</p></div></div>
     </div>
-    <div class="idx">10</div>
+    <div class="idx">12</div>
   </section>
 
   <!-- 10 参与方式 | 动画：标题 + 三块入场 + 脉冲 -->
-  <section class="screen">
+  <section class="screen wash-warm">
+    <svg class="bgfx" viewBox="0 0 390 844" preserveAspectRatio="xMidYMid slice" aria-hidden="true"><g fill="none" stroke="#2E4E6E" stroke-width="1.2" opacity=".15"><path d="M-10 812 C80 786 120 700 150 600"/><path d="M-10 812 C90 800 170 760 240 700"/><path d="M-10 812 C60 812 110 812 160 812"/></g><g color="#2E5F73" opacity="0.24"><g transform="translate(300,168) scale(1.0)"><path d="M0 8 C7 0 14 0 21 8 C28 0 35 0 42 8" fill="none" stroke="currentColor" stroke-width="0.95" stroke-linecap="round"/></g><g transform="translate(330,183) scale(0.82)"><path d="M0 8 C7 0 14 0 21 8 C28 0 35 0 42 8" fill="none" stroke="currentColor" stroke-width="0.8" stroke-linecap="round"/></g><g transform="translate(357,159) scale(0.72)"><path d="M0 8 C7 0 14 0 21 8 C28 0 35 0 42 8" fill="none" stroke="currentColor" stroke-width="0.72" stroke-linecap="round"/></g><g transform="translate(385,177) scale(0.62)"><path d="M0 8 C7 0 14 0 21 8 C28 0 35 0 42 8" fill="none" stroke="currentColor" stroke-width="0.65" stroke-linecap="round"/></g><g transform="translate(410,163) scale(0.55)"><path d="M0 8 C7 0 14 0 21 8 C28 0 35 0 42 8" fill="none" stroke="currentColor" stroke-width="0.6" stroke-linecap="round"/></g></g></svg>
     <p class="label a d1">参与</p>
     <h2 class="serif a d2" style="margin:16px 0 22px">三种方式<br>加入我们</h2>
     <div class="plates">
@@ -386,11 +498,12 @@ h2{font-size:33px;line-height:1.3;font-weight:700;letter-spacing:.01em;}
       <div class="plate a d4"><i class="pulse">B</i><div><b>我是品牌</b><p>申请生态市集摊位，需通过绿色资质审核</p></div></div>
       <div class="plate a d5"><i class="pulse">C</i><div><b>我是志愿者</b><p>加入湿地守护队，参与巡护与导览</p></div></div>
     </div>
-    <div class="idx">11</div>
+    <div class="idx">13</div>
   </section>
 
   <!-- 11 预期成效 | 动画：标题 + 柱状图生长 + 数字 + 坐标 -->
-  <section class="screen">
+  <section class="screen wash-warm">
+    <svg class="bgfx" viewBox="0 0 390 844" preserveAspectRatio="xMidYMid slice" aria-hidden="true"><g stroke="#1E6E8C" opacity=".10" stroke-width=".8"><path d="M0 210 L390 210 M0 290 L390 290 M0 370 L390 370 M0 450 L390 450"/></g><path d="M20 470 L120 420 L210 440 L300 340 L380 300" fill="none" stroke="#DE8438" stroke-width="1.4" stroke-dasharray="5 7" opacity=".22"/><g transform="translate(0,0)"><path d="M0 690 C40 664 70 650 108 662 C150 676 178 700 214 690 C252 680 280 654 318 660 C348 665 372 684 390 692 L390 790 L0 790 Z" fill="#3E6C82" opacity=".13"/><path d="M0 716 C36 700 74 690 112 700 C152 711 186 730 226 722 C266 714 300 696 340 702 C364 706 380 716 390 722 L390 806 L0 806 Z" fill="#2E5F73" opacity=".11"/></g><path d="M0 726 C60 712 120 736 180 726 C240 716 300 738 390 726" fill="none" stroke="#2E5F73" stroke-width="1.3" opacity="0.22"/><g stroke="#2E5F73" fill="none" stroke-linecap="round" opacity="0.172"><path d="M28 752 C66 744 104 744 142 752" stroke-width="1.0"/><path d="M198 770 C236 762 274 762 312 770" stroke-width="0.9"/><path d="M66 790 C104 782 142 782 180 790" stroke-width="0.8"/><path d="M224 812 C262 804 300 804 338 812" stroke-width="0.7"/></g></svg>
     <p class="label a d1">预期成效</p>
     <h2 class="serif a d2" style="margin:16px 0 4px">我们希望达成</h2>
     <div class="bars">
@@ -403,26 +516,27 @@ h2{font-size:33px;line-height:1.3;font-weight:700;letter-spacing:.01em;}
       <span>主题活动</span><span>生态摊位</span><span>线上观看</span><span>持续时长</span>
     </div>
     <p class="meta a d7" style="margin-top:20px">以上为活动筹备阶段设定的预期目标</p>
-    <div class="idx">12</div>
+    <div class="idx">14</div>
   </section>
 
-  <!-- 12 封底 | 动画：二维码缩放 + 文字 + 波形 + 收束 -->
-  <section class="screen dark">
-    <div style="text-align:center">
-      <svg class="birds drift" width="112" height="28" viewBox="0 0 112 28" fill="none" style="color:#DE8438;margin-bottom:24px">
-        <path d="M2 12C9 4 16 4 23 12C30 4 37 4 44 12" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
-        <path d="M58 20C64 14 70 14 76 20C82 14 88 14 94 20" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" opacity=".6"/>
-      </svg>
-      <h2 class="serif a d1" style="font-size:28px">一湖清水　万羽归巢</h2>
-      <div class="rule grow" style="margin:24px 0"></div>
-      <div class="qr zoom a d3"><img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAwwAAAMMCAIAAABxHbcsAAARl0lEQVR4nO3YQW6tOAJA0ZfWm7Ml9sA62QNbYgX0uLtvqdLhVxyHc2Z5EsLYhlz547quFwAA/+lf//U3AAAiCQCgOUkCAAgiCQAgiCQAgCCSAACCSAIACCIJACCIJACAIJIAAIJIAgAIIgkAIIgkAIAgkgAAgkgCAAgiCQAgiCQAgCCSAACCSAIACCIJACCIJACAIJIAAIJIAgAIIgkAIIgkAIAgkgAAgkgCABBJAACf4yQJACCIJACAIJIAAIJIAgAIIgkAIIgkAIAgkgAAgkgCAAgiCQAgiCQAgCCSAACCSAIACCIJACCIJACAIJIAAIJIAgAIIgkAIIgkAIAgkgAAgkgCAAgiCQAgiCQAgCCSAACCSAIACCIJACCIJACAIJIAAIJIAgAIIgkAIIgkAIAgkgAAwvs1oWXdRg+Bv3Ee+5D1vXPfO4z555txjWY0ap79X/j5zgnfIydJAABBJAEABJEEABBEEgBAEEkAAEEkAQAEkQQAEEQSAEAQSQAAQSQBAASRBAAQRBIAQBBJAABBJAEABJEEABBEEgBAEEkAAEEkAQAEkQQAEN6vhzmPffQQprGs2+tJY76zN+5cO+OYZ9xXo9ZoRk/7Tj7tee9YHvYuOEkCAAgiCQAgiCQAgCCSAACCSAIACCIJACCIJACAIJIAAIJIAgAIIgkAIIgkAIAgkgAAgkgCAAgiCQAgiCQAgCCSAACCSAIACCIJACCIJACA8K4facu6TTc157G/nuTO8864vqPMOFd3xjxqX42674zrO8qMc/W0/wt3OEkCAAgiCQAgiCQAgCCSAACCSAIACCIJACCIJACAIJIAAIJIAgAIIgkAIIgkAIAgkgAAgkgCAAgiCQAgiCQAgCCSAACCSAIACCIJACCIJACA8K4fYaTz2L987bJuf3Qs/Kz1HeXOvhr1vKPu6x3kN3GSBAAQRBIAQBBJAABBJAEABJEEABBEEgBAEEkAAEEkAQAEkQQAEEQSAEAQSQAAQSQBAASRBAAQRBIAQBBJAABBJAEABJEEABBEEgBAEEkAAOFdP8JIy7o9agHOY//ytU+bq1HPO+MazThm+GmcJAEABJEEABBEEgBAEEkAAEEkAQAEkQQAEEQSAEAQSQAAQSQBAASRBAAQRBIAQBBJAABBJAEABJEEABBEEgBAEEkAAEEkAQAEkQQAEEQSAEB414+089hNzTeYcZ6XdRty7dPWaMa9McqoffW0NXra8z6NkyQAgCCSAACCSAIACCIJACCIJACAIJIAAIJIAgAIIgkAIIgkAIAgkgAAgkgCAAgiCQAgiCQAgCCSAACCSAIACCIJACCIJACAIJIAAIJIAgAI79fDLOs2egj8g2t0HvuXr3Xf7/G0eb5jxuedcZ79X+CvOEkCAAgiCQAgiCQAgCCSAACCSAIACCIJACCIJACAIJIAAIJIAgAIIgkAIIgkAIAgkgAAgkgCAAgiCQAgiCQAgCCSAACCSAIACCIJACCIJACA8HFdV/0OU1rWbfQQpnEe++ghTGPUvrqzRjOOGX4aJ0kAAEEkAQAEkQQAEEQSAEAQSQAAQSQBAASRBAAQRBIAQBBJAABBJAEABJEEABBEEgBAEEkAAEEkAQAEkQQAEEQSAEAQSQAAQSQBAASRBAAQ3q8JLev25WvPY3/NNma+Z31nXCP7+efP1aj7zuhp33bfq5/PSRIAQBBJAABBJAEABJEEABBEEgBAEEkAAEEkAQAEkQQAEEQSAEAQSQAAQSQBAASRBAAQRBIAQBBJAABBJAEABJEEABBEEgBAEEkAAEEkAQCEj+u6XrNZ1u01m/PYp3teY/6euRplxn11x9O+G3c8bW/cYV/9bk6SAACCSAIACCIJACCIJACAIJIAAIJIAgAIIgkAIIgkAIAgkgAAgkgCAAgiCQAgiCQAgCCSAACCSAIACCIJACCIJACAIJIAAIJIAgAIIgkAILxfD3Me+5evXdZtyLUzjvmOO8876r5Pm6tRnjbPo74bd5irn+9p79EdTpIAAIJIAgAIIgkAIIgkAIAgkgAAgkgCAAgiCQAgiCQAgCCSAACCSAIACCIJACCIJACAIJIAAIJIAgAIIgkAIIgkAIAgkgAAgkgCAAgiCQAgvF8Ps6zbl689j33IfUe587yjzDjPfI8Z9/OMYx71Do76Po9aoxnneUZOkgAAgkgCAAgiCQAgiCQAgCCSAACCSAIACCIJACCIJACAIJIAAIJIAgAIIgkAIIgkAIAgkgAAgkgCAAgiCQAgiCQAgCCSAACCSAIACCIJACB8XNdVv/NLLOs25L7nsX/52qeN2Vz9fDOu0YxmnOc7Y57RMuhbN4qTJACAIJIAAIJIAgAIIgkAIIgkAIAgkgAAgkgCAAgiCQAgiCQAgCCSAACCSAIACCIJACCIJACAIJIAAIJIAgAIIgkAIIgkAIAgkgAAgkgCAAjv18Ms6zZ6CNM4j/1R83xnzHfmapQZxzzjfh41z95Bc/VP7MnzYd8NJ0kAAEEkAQAEkQQAEEQSAEAQSQAAQSQBAASRBAAQRBIAQBBJAABBJAEABJEEABBEEgBAEEkAAEEkAQAEkQQAEEQSAEAQSQAAQSQBAASRBAAQ3vUj7Tz2L0/Nsm7TTeuoMY+a5zv3HWXGMd/xtL0x45hHGTVXM37b+TwnSQAAQSQBAASRBAAQRBIAQBBJAABBJAEABJEEABBEEgBAEEkAAEEkAQAEkQQAEEQSAEAQSQAAQSQBAASRBAAQRBIAQBBJAABBJAEABJEEABA+ruuq3wnLug2Zl/PYX09yZ55HzdWovTGjGffz0/bknTH7Tv7uuVomfBfucJIEABBEEgBAEEkAAEEkAQAEkQQAEEQSAEAQSQAAQSQBAASRBAAQRBIAQBBJAABBJAEABJEEABBEEgBAEEkAAEEkAQAEkQQAEEQSAEAQSQAA4eO6rvqdsKzbdPNyHvuQ571z31FmfN5Re3LG9X3a3pjRjN/YUeyr7+EkCQAgiCQAgCCSAACCSAIACCIJACCIJACAIJIAAIJIAgAIIgkAIIgkAIAgkgAAgkgCAAgiCQAgiCQAgCCSAACCSAIACCIJACCIJACAIJIAAML7NaFl3V6zOY99uue9M+Y77jzvqDGPMuMa3fG09Z3xXfB9/t3/F572/jpJAgAIIgkAIIgkAIAgkgAAgkgCAAgiCQAgiCQAgCCSAACCSAIACCIJACCIJACAIJIAAIJIAgAIIgkAIIgkAIAgkgAAgkgCAAgiCQAgiCQAgPB+Teg89i9fu6yb+/5id9Z31H3v7OcZ54rfvTdGjfmOGf8v3DHjmEdxkgQAEEQSAEAQSQAAQSQBAASRBAAQRBIAQBBJAABBJAEABJEEABBEEgBAEEkAAEEkAQAEkQQAEEQSAEAQSQAAQSQBAASRBAAQRBIAQBBJAADh47qu12yWdfvyteex/9Gx8OfNuL53xnzHnec15t9txndhxu/zqPfojhnneRQnSQAAQSQBAASRBAAQRBIAQBBJAABBJAEABJEEABBEEgBAEEkAAEEkAQAEkQQAEEQSAEAQSQAAQSQBAASRBAAQRBIAQBBJAABBJAEABJEEABDerwmdxz7kvsu6Tfe8M455RjPuSfvqe+Z5RqOed8b9PON9+TwnSQAAQSQBAASRBAAQRBIAQBBJAABBJAEABJEEABBEEgBAEEkAAEEkAQAEkQQAEEQSAEAQSQAAQSQBAASRBAAQRBIAQBBJAABBJAEABJEEABA+rut6zWZZt9FDeITz2F9PcmdfzThXo57XfX/+PN/xtHdhlBnneUZOkgAAgkgCAAgiCQAgiCQAgCCSAACCSAIACCIJACCIJACAIJIAAIJIAgAIIgkAIIgkAIAgkgAAgkgCAAgiCQAgiCQAgCCSAACCSAIACCIJACB8XNf1ms2ybl++9jz215Oel8972t6487wz7smnre+MRq3RjPM84/t7TvgOOkkCAAgiCQAgiCQAgCCSAACCSAIACCIJACCIJACAIJIAAIJIAgAIIgkAIIgkAIAgkgAAgkgCAAgiCQAgiCQAgCCSAACCSAIACCIJACCIJACA8HFd12s2y7p9+drz2Ifc945RY37aXPE9Ru2NO+yrz/PN+Z65usN+/jwnSQAAQSQBAASRBAAQRBIAQBBJAABBJAEABJEEABBEEgBAEEkAAEEkAQAEkQQAEEQSAEAQSQAAQSQBAASRBAAQRBIAQBBJAABBJAEABJEEABA+rut6zWZZtyH3PY99yJjv3HfGeZ7RqDUaZcZ38I6nvb+jvnV83tO+OaM4SQIACCIJACCIJACAIJIAAIJIAgAIIgkAIIgkAIAgkgAAgkgCAAgiCQAgiCQAgCCSAACCSAIACCIJACCIJACAIJIAAIJIAgAIIgkAIIgkAIDwcV1X/Q7DLOv25WvPY389acwz3veOp83VjGt0x6j3946nre854Rrd4SQJACCIJACAIJIAAIJIAgAIIgkAIIgkAIAgkgAAgkgCAAgiCQAgiCQAgCCSAACCSAIACCIJACCIJACAIJIAAIJIAgAIIgkAIIgkAIAgkgAAwvs1oWXdRg+Bv3Ee+5A5mnFvzDjmGffGqDW687xP2xszrtGMnva8dzhJAgAIIgkAIIgkAIAgkgAAgkgCAAgiCQAgiCQAgCCSAACCSAIACCIJACCIJACAIJIAAIJIAgAIIgkAIIgkAIAgkgAAgkgCAAgiCQAgiCQAgPB+Pcx57KOHMI1l3UYP4RH76s48z3jfUUbN1R2j5nnGd3/GPTlqnp/27t/hJAkAIIgkAIAgkgAAgkgCAAgiCQAgiCQAgCCSAACCSAIACCIJACCIJACAIJIAAIJIAgAIIgkAIIgkAIAgkgAAgkgCAAgiCQAgiCQAgCCSAADCu36kLes23dScxz56CI9wZ2/MuEajnnfUO/i0MY8y4zd2xjV62jzf4SQJACCIJACAIJIAAIJIAgAIIgkAIIgkAIAgkgAAgkgCAAgiCQAgiCQAgCCSAACCSAIACCIJACCIJACAIJIAAIJIAgAIIgkAIIgkAIAgkgAAwrt+BP4/57FPN2XG/PPNuEYzztWybkPuO4q5+jwnSQAAQSQBAASRBAAQRBIAQBBJAABBJAEABJEEABBEEgBAEEkAAEEkAQAEkQQAEEQSAEAQSQAAQSQBAASRBAAQRBIAQBBJAABBJAEABJEEABDe9SOMdB77kPsu6/Z6kjvPe2eNZpznUXtyFO/g53mPfjcnSQAAQSQBAASRBAAQRBIAQBBJAABBJAEABJEEABBEEgBAEEkAAEEkAQAEkQQAEEQSAEAQSQAAQSQBAASRBAAQRBIAQBBJAABBJAEABJEEABDe9SPtPHZT88Mt6zbd+o4a851r74z5jqeN+WmeNlej9iSf5yQJACCIJACAIJIAAIJIAgAIIgkAIIgkAIAgkgAAgkgCAAgiCQAgiCQAgCCSAACCSAIACCIJACCIJACAIJIAAIJIAgAIIgkAIIgkAIAgkgAAwvv1MMu6jR4CP3SN7tz3PPYh1874vHcY8/fM1Sij9tUoT3veGTlJAgAIIgkAIIgkAIAgkgAAgkgCAAgiCQAgiCQAgCCSAACCSAIACCIJACCIJACAIJIAAIJIAgAIIgkAIIgkAIAgkgAAgkgCAAgiCQAgiCQAgPBxXVf9DgDwaE6SAACCSAIACCIJACCIJACAIJIAAIJIAgAIIgkAIIgkAIAgkgAAgkgCAAgiCQAgiCQAgCCSAACCSAIACCIJACCIJACAIJIAAIJIAgAIIgkAIIgkAIAgkgAAgkgCAAgiCQAgiCQAgCCSAACCSAIACCIJACCIJACAIJIAAIJIAgAIIgkAIIgkAIAgkgAAgkgCAAgiCQAgiCQAgCCSAACCSAIACCIJACCIJACAIJIAAIJIAgAIIgkAIIgkAIAgkgAAgkgCAAgiCQAgiCQAgCCSAACCSAIACCIJACCIJACAIJIAAIJIAgAIIgkAIIgkAIAgkgAAgkgCAAgiCQDg9b/+DZ9i4x9UsTs1AAAAAElFTkSuQmCC" alt="扫码进入作品，二维码指向本作品在线预览地址"></div>
-      <p class="foot a d4">扫码进入活动主页，预约观鸟与市集<br>2026 鄱阳湖国际观鸟季 · 生态消费周组委会</p>
+  <!-- 14 结尾：绿色承诺 -->
+  <section class="screen wash-mint">
+    <svg class="bgfx" viewBox="0 0 390 844" preserveAspectRatio="xMidYMid slice" aria-hidden="true"><g fill="none" stroke="#2FA98C" opacity=".18" stroke-width="1.3"><circle cx="60" cy="742" r="42"/><circle cx="60" cy="742" r="72"/></g><path d="M60 702 C74 718 74 738 60 754 C46 738 46 718 60 702 Z" fill="#2FA98C" fill-opacity=".14"/><g color="#2E5F73" opacity="0.22"><g transform="translate(250,172) scale(1.0)"><path d="M0 8 C7 0 14 0 21 8 C28 0 35 0 42 8" fill="none" stroke="currentColor" stroke-width="0.95" stroke-linecap="round"/></g><g transform="translate(280,187) scale(0.82)"><path d="M0 8 C7 0 14 0 21 8 C28 0 35 0 42 8" fill="none" stroke="currentColor" stroke-width="0.8" stroke-linecap="round"/></g><g transform="translate(307,163) scale(0.72)"><path d="M0 8 C7 0 14 0 21 8 C28 0 35 0 42 8" fill="none" stroke="currentColor" stroke-width="0.72" stroke-linecap="round"/></g><g transform="translate(335,181) scale(0.62)"><path d="M0 8 C7 0 14 0 21 8 C28 0 35 0 42 8" fill="none" stroke="currentColor" stroke-width="0.65" stroke-linecap="round"/></g><g transform="translate(360,167) scale(0.55)"><path d="M0 8 C7 0 14 0 21 8 C28 0 35 0 42 8" fill="none" stroke="currentColor" stroke-width="0.6" stroke-linecap="round"/></g></g><path d="M0 790 C60 776 120 800 180 790 C240 780 300 802 390 790" fill="none" stroke="#2E5F73" stroke-width="1.3" opacity="0.2"/><g stroke="#2E5F73" fill="none" stroke-linecap="round" opacity="0.156"><path d="M28 816 C66 808 104 808 142 816" stroke-width="1.0"/><path d="M198 834 C236 826 274 826 312 834" stroke-width="0.9"/><path d="M66 854 C104 846 142 846 180 854" stroke-width="0.8"/><path d="M224 876 C262 868 300 868 338 876" stroke-width="0.7"/></g></svg>
+    <p class="label a d1">绿色办展</p>
+    <h2 class="serif a d2" style="margin:16px 0 20px">这场活动的绿色承诺</h2>
+    <div class="plates">
+      <div class="plate a d3"><i>01</i><div><b>可循环展具</b><p>九成展具重复使用，展后统一回收再进场</p></div></div>
+      <div class="plate a d4"><i>02</i><div><b>全程无纸化</b><p>电子票证与电子会刊，现场物料按需印制</p></div></div>
+      <div class="plate a d5"><i>03</i><div><b>低碳接驳</b><p>开通观鸟专线巴士，减少自驾车流与拥堵</p></div></div>
     </div>
-    <div class="idx" style="color:rgba(237,232,220,.4)">13</div>
+    <p class="meta a d6" style="margin:20px 0 0">办展碳排与物料回收率，活动结束后对外公示</p>
+    <p class="serif a d7" style="margin-top:16px;font-size:17px;color:var(--deep)">让绿色成为这场活动的底色</p>
+    <div class="idx">15</div>
   </section>
 
 </div>
 
+<div class="modal" id="mkModal" role="dialog" aria-modal="true" aria-label="摊位详情"><div class="modal-box"><div class="modal-art"><div class="mk-view" data-view="rice"><img src="img/market-rice.jpg" alt="有机大米实拍" loading="lazy"></div><div class="mk-view" data-view="oil" hidden><img src="img/market-oil.jpg" alt="山茶油实拍" loading="lazy"></div><div class="mk-view" data-view="weave" hidden><img src="img/market-weave.jpg" alt="芦苇编织实拍" loading="lazy"></div><div class="mk-view" data-view="merch" hidden><img src="img/market-merch.jpg" alt="白鹤实拍" loading="lazy"></div></div><p class="modal-cap" id="mkCap"></p><button class="modal-close" id="mkClose" type="button">关闭</button></div></div>
 <audio id="bgm" src="bgm.mp3" loop preload="auto"></audio>
 <button id="bgmBtn" class="bgm" type="button" aria-label="背景音乐开关">
   <svg class="ic-off" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor"
@@ -449,8 +563,11 @@ h2{font-size:33px;line-height:1.3;font-weight:700;letter-spacing:.01em;}
   var cur = 0;
 
   screens.forEach(function(s,i){
-    var d = document.createElement('i');
+    var d = document.createElement('button');
+    d.type = 'button';
     d.className = 'dot' + (i===0?' on':'');
+    d.setAttribute('aria-label', '跳到第 ' + (i+1) + ' 屏');
+    d.addEventListener('click', function(){ jump(i, true); });
     dotsWrap.appendChild(d);
   });
   var dots = Array.prototype.slice.call(dotsWrap.children);
@@ -462,6 +579,7 @@ h2{font-size:33px;line-height:1.3;font-weight:700;letter-spacing:.01em;}
     screens.forEach(function(s,j){ if(j!==i) s.classList.remove('in'); });
     el.classList.add('in');
     dots.forEach(function(d,j){ d.classList.toggle('on', j===i); });
+    if(bgmBtn) bgmBtn.classList.toggle('on-dark', el.classList.contains('dark'));
     place();
   }
 
@@ -586,8 +704,93 @@ h2{font-size:33px;line-height:1.3;font-weight:700;letter-spacing:.01em;}
   ['touchstart', 'pointerdown', 'click'].forEach(function(type){
     document.addEventListener(type, unlock, {passive: true});
   });
+  if(bgmBtn) bgmBtn.classList.toggle('on-dark', screens[0].classList.contains('dark'));
+
+  /* 生态市集：点摊位弹图 */
+  var mkModal = document.getElementById('mkModal');
+  if(mkModal){
+    var mkCap = document.getElementById('mkCap');
+    var mkClose = document.getElementById('mkClose');
+    var MK_CAP = {"rice": "有机大米｜湖区周边生态种植，展期现场可试吃，支持产地直发。", "oil": "山茶油｜本地油茶果压榨，展位提供小样与检测报告。", "weave": "芦苇编织｜非遗手艺与再生材料，展后展具统一回收。", "merch": "候鸟文创｜徽章与望远镜挂饰，收益的一部分用于湿地巡护。"};
+    var closeModal = function(){ mkModal.classList.remove('on'); };
+    Array.prototype.forEach.call(document.querySelectorAll('.cell[data-item]'), function(el){
+      el.addEventListener('click', function(ev){
+        ev.stopPropagation();
+        var key = el.getAttribute('data-item');
+        Array.prototype.forEach.call(mkModal.querySelectorAll('.mk-view'), function(v){
+          v.hidden = v.getAttribute('data-view') !== key;
+        });
+        mkCap.textContent = MK_CAP[key] || '';
+        mkModal.classList.add('on');
+      });
+    });
+    mkClose.addEventListener('click', closeModal);
+    mkModal.addEventListener('click', function(ev){ if(ev.target === mkModal) closeModal(); });
+    document.addEventListener('keydown', function(ev){
+      if(ev.key === 'Escape' || ev.keyCode === 27) closeModal();
+    });
+  }
+
+  /* 开场屏：3.2 秒后自动进入封面，轻触立即跳过 */
+  var openScreen = document.querySelector('.screen.open');
+  if(openScreen){
+    var skipped = false;
+    var skip = function(){
+      if(skipped) return;
+      skipped = true;
+      jump(1, true);
+    };
+    setTimeout(skip, 3200);
+    ['touchstart', 'pointerdown', 'click', 'wheel'].forEach(function(type){
+      document.addEventListener(type, function(ev){
+        if(ev && ev.target && ev.target.closest && ev.target.closest('#bgmBtn')) return;
+        skip();
+      }, {passive: true});
+    });
+  }
   place();
 })();
 </script>
+
+<style>
+.bgfx{position:absolute;inset:0;width:100%;height:100%;z-index:-1;pointer-events:none;}
+</style>
+
+<style>
+.cell{position:relative;cursor:pointer;font-family:inherit;text-align:left;color:inherit;}
+.cell::after{content:"＋";position:absolute;top:9px;right:11px;font-size:12px;line-height:1;
+  color:rgba(30,110,140,.5);}
+.modal{position:fixed;inset:0;z-index:70;display:none;align-items:center;justify-content:center;
+  padding:26px;background:rgba(14,63,82,.55);
+  -webkit-backdrop-filter:blur(3px);backdrop-filter:blur(3px);}
+.modal.on{display:flex;}
+.modal-box{width:100%;max-width:332px;background:#F7F5EF;border-radius:18px;padding:16px;
+  box-shadow:0 22px 50px rgba(14,63,82,.32);animation:mkpop .26s cubic-bezier(.2,.8,.2,1);}
+@keyframes mkpop{from{transform:scale(.94);opacity:0}to{transform:none;opacity:1}}
+.modal-art{border-radius:12px;overflow:hidden;}
+.mk-svg{display:block;width:100%;height:auto;}
+.modal-cap{margin:14px 4px;font-size:13.5px;line-height:1.75;color:rgba(34,50,60,.82);}
+.modal-close{width:100%;padding:12px;border:none;border-radius:12px;background:var(--lake);
+  color:#fff;font-size:14px;font-family:inherit;cursor:pointer;}
+</style>
+
+<style>
+.modal-art{background:#EFEBE1;border-radius:12px;height:296px;display:flex;align-items:center;
+  justify-content:center;padding:10px;box-sizing:border-box;}
+.modal-art img{max-width:100%;max-height:100%;width:auto;height:auto;display:block;border-radius:6px;}
+</style>
+
+<style>
+.screen.open{padding-top:0;padding-bottom:0;}
+.open-glow{position:absolute;inset:0;background:radial-gradient(55% 38% at 50% 44%,rgba(222,132,56,.20),transparent 72%);}
+.open-flock{position:absolute;top:20%;left:0;width:100%;height:auto;opacity:.9;
+  animation:flyAcross 11s ease-in-out infinite;}
+@keyframes flyAcross{0%,100%{transform:translateX(-16%)}50%{transform:translateX(16%)}}
+.open-inner{position:relative;z-index:2;width:100%;}
+</style>
 </body>
+
+
+
+
 </html>
