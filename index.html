@@ -1,0 +1,593 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no,viewport-fit=cover">
+<title>鄱阳湖国际观鸟季 · 生态消费周</title>
+<style>
+:root{
+  --lake:#1E6E8C;
+  --deep:#0E3F52;
+  --mist:#F4F0E7;
+  --sun:#DE8438;
+  --ink:#22323C;
+  --reed:#B7AC94;
+  --line:rgba(34,50,60,.14);
+}
+*{margin:0;padding:0;box-sizing:border-box;}
+html,body{height:100%;}
+body{
+  font-family:"Noto Sans SC","Source Han Sans SC","PingFang SC","Microsoft YaHei",sans-serif;
+  color:var(--ink);
+  background:var(--mist);
+  -webkit-font-smoothing:antialiased;
+  overflow:hidden;
+}
+.serif{font-family:"Source Han Serif SC","Noto Serif SC","Songti SC",SimSun,serif;}
+
+/* ===== 全局交互 ===== */
+.progress{position:fixed;top:0;left:0;height:3px;width:0;z-index:60;
+  background:linear-gradient(90deg,var(--lake),var(--sun));transition:width .45s ease;}
+.dots{position:fixed;right:11px;top:50%;transform:translateY(-50%);z-index:60;
+  display:flex;flex-direction:column;gap:7px;}
+.dot{width:5px;height:5px;border-radius:50%;background:var(--line);transition:.35s;}
+.dot.on{background:var(--lake);transform:scale(1.6);}
+.h5{height:100vh;height:100dvh;overflow-y:scroll;scroll-snap-type:y mandatory;
+  -webkit-overflow-scrolling:touch;scrollbar-width:none;}
+.h5::-webkit-scrollbar{display:none;}
+.screen{height:100vh;height:100dvh;scroll-snap-align:start;position:relative;
+  display:flex;flex-direction:column;justify-content:center;
+  padding:70px 34px 60px;overflow:hidden;}
+
+/* ===== 入场动画系统 ===== */
+.a{opacity:0;transform:translateY(26px);
+  transition:opacity .9s ease,transform .9s cubic-bezier(.22,.72,.2,1);}
+.in .a{opacity:1;transform:none;}
+.in .d1{transition-delay:.05s;}
+.in .d2{transition-delay:.18s;}
+.in .d3{transition-delay:.31s;}
+.in .d4{transition-delay:.44s;}
+.in .d5{transition-delay:.57s;}
+.in .d6{transition-delay:.70s;}
+.in .d7{transition-delay:.83s;}
+.grow{transform:scaleX(0);transform-origin:left;opacity:1;
+  transition:transform 1ms;}
+.in .grow{transition:transform 1.1s cubic-bezier(.22,.72,.2,1) .4s;transform:scaleX(1);}
+.rise{transform:translateY(24px) scaleY(.2);transform-origin:bottom;}
+.in .rise{transform:none;}
+.zoom{transform:scale(.84) translateY(18px);}
+.in .zoom{transform:none;}
+.drift{animation:drift 11s ease-in-out infinite;}
+@keyframes drift{0%,100%{transform:translate(0,0);}50%{transform:translate(9px,-11px);}}
+.wave{animation:wave 6s ease-in-out infinite;}
+@keyframes wave{0%,100%{transform:translateX(0);}50%{transform:translateX(-14px);}}
+.pulse{animation:pulse 2.6s ease-in-out infinite;}
+@keyframes pulse{0%,100%{opacity:.25;transform:scale(1);}50%{opacity:.75;transform:scale(1.18);}}
+.scan{animation:scan 3.4s ease-in-out infinite;}
+@keyframes scan{0%,100%{transform:translateY(-38px);opacity:.15;}50%{transform:translateY(38px);opacity:.85;}}
+
+/* ===== 通用文字 ===== */
+.label{font-size:11px;letter-spacing:.34em;color:var(--lake);text-transform:uppercase;}
+.rule{height:1px;background:var(--line);width:100%;margin:22px 0;}
+h1{font-size:44px;line-height:1.24;letter-spacing:.02em;font-weight:700;}
+h2{font-size:33px;line-height:1.3;font-weight:700;letter-spacing:.01em;}
+.sub{font-size:14px;color:rgba(34,50,60,.72);line-height:1.9;}
+.meta{font-size:12.5px;color:rgba(34,50,60,.6);letter-spacing:.08em;line-height:1.9;}
+.idx{position:absolute;top:34px;right:34px;font-size:11px;letter-spacing:.2em;
+  color:rgba(34,50,60,.35);}
+.birds{color:var(--lake);}
+
+/* ===== 01 封面 ===== */
+.cover-bg{position:absolute;inset:0;background:
+  radial-gradient(120% 70% at 78% 12%,rgba(222,132,56,.18),transparent 60%),
+  radial-gradient(90% 60% at 12% 96%,rgba(30,110,140,.20),transparent 62%),
+  linear-gradient(180deg,#F7F4EC 0%,#EDE8DC 100%);}
+.cover-inner{position:relative;z-index:2;}
+.hint{position:absolute;bottom:34px;left:0;right:0;width:max-content;margin:0 auto;
+  font-size:11px;letter-spacing:.22em;color:rgba(34,50,60,.45);white-space:nowrap;}
+.hint span{display:inline-block;animation:bob 2.2s ease-in-out infinite;}
+@keyframes bob{0%,100%{transform:translateY(0);}50%{transform:translateY(7px);}}
+
+/* ===== 03 数据 ===== */
+.stat{display:grid;grid-template-columns:92px 1fr;gap:14px;align-items:baseline;
+  padding:20px 0;border-bottom:1px solid var(--line);}
+.stat:last-child{border-bottom:none;}
+.stat b{font-size:32px;font-weight:700;color:var(--lake);
+  font-family:"Source Han Serif SC",SimSun,serif;}
+.stat span{font-size:13.5px;line-height:1.7;color:rgba(34,50,60,.78);
+  min-width:0;word-break:break-word;}
+
+/* ===== 04 对比 ===== */
+.compare{display:flex;flex-direction:column;gap:14px;margin-top:8px;}
+.card{padding:20px 20px;border-radius:14px;background:rgba(255,255,255,.62);
+  border:1px solid var(--line);}
+.card.old{opacity:.62;}
+.card.new{background:linear-gradient(135deg,rgba(30,110,140,.10),rgba(222,132,56,.10));
+  border-color:rgba(30,110,140,.32);}
+.card h3{font-size:12px;letter-spacing:.24em;color:var(--lake);font-weight:600;margin-bottom:9px;}
+.card p{font-size:14.5px;line-height:1.75;color:rgba(34,50,60,.86);}
+.arrow{text-align:center;color:var(--reed);font-size:18px;line-height:1;}
+
+/* ===== 05 板块 ===== */
+.plates{display:flex;flex-direction:column;gap:13px;}
+.plate.link{grid-template-columns:34px 1fr 16px;text-decoration:none;color:inherit;
+  cursor:pointer;transition:transform .18s ease;}
+.plate.link:active{transform:scale(.98);}
+.plate .go{color:var(--lake);font-size:15px;line-height:1;}
+.back{position:absolute;top:26px;left:34px;display:inline-flex;align-items:center;gap:6px;
+  font-size:12px;letter-spacing:.06em;color:var(--lake);text-decoration:none;}
+.plate{display:grid;grid-template-columns:34px 1fr;gap:16px;align-items:center;
+  padding:19px 20px;border-radius:14px;
+  background:rgba(255,255,255,.6);border:1px solid var(--line);}
+.plate i{width:34px;height:34px;border-radius:50%;
+  border:1.5px solid var(--lake);display:flex;align-items:center;justify-content:center;
+  font-style:normal;font-size:13px;color:var(--lake);}
+.plate div{min-width:0;}
+.plate div b{display:block;font-size:15.5px;margin-bottom:4px;}
+.plate div p{font-size:12.5px;color:rgba(34,50,60,.66);line-height:1.6;
+  word-break:break-word;}
+
+/* ===== 06 手机 ===== */
+.phone{width:196px;margin:0 auto 22px;border-radius:26px;padding:9px;
+  background:linear-gradient(160deg,#22323C,#0E3F52);
+  box-shadow:0 22px 44px rgba(14,63,82,.28);}
+.phone .scr{position:relative;height:300px;border-radius:19px;overflow:hidden;
+  background:linear-gradient(180deg,#BFD9E4 0%,#8FBCCE 42%,#5E94A8 100%);}
+.phone .scr .sunset{position:absolute;top:44px;left:0;right:0;height:70px;
+  background:radial-gradient(closest-side,rgba(222,132,56,.55),transparent);}
+.phone .scr .land{position:absolute;bottom:0;left:0;right:0;height:96px;background:#2E5566;}
+.phone .scr svg{position:absolute;}
+.rec{position:absolute;top:12px;left:12px;display:flex;align-items:center;gap:6px;
+  font-size:9px;letter-spacing:.16em;color:#fff;}
+.rec em{width:7px;height:7px;border-radius:50%;background:#E4573C;font-style:normal;}
+
+/* ===== 07 市集 ===== */
+.grid{display:grid;grid-template-columns:1fr 1fr;gap:11px;margin-top:6px;}
+.cell{padding:16px 14px;border-radius:13px;background:rgba(255,255,255,.6);
+  border:1px solid var(--line);}
+.cell b{display:block;font-size:14px;margin-bottom:5px;}
+.cell p{font-size:11.5px;color:rgba(34,50,60,.62);line-height:1.6;}
+
+/* ===== 08 标签 ===== */
+.tags{display:flex;flex-wrap:wrap;gap:9px;margin-top:6px;}
+.tag{padding:10px 15px;border-radius:999px;font-size:13px;
+  background:rgba(255,255,255,.68);border:1px solid var(--line);}
+.tag.hot{background:linear-gradient(135deg,var(--lake),#2B86A6);color:#fff;border-color:transparent;}
+
+/* ===== 09 日程 ===== */
+.day{display:grid;grid-template-columns:62px 1fr;gap:16px;padding:17px 0;
+  border-bottom:1px solid var(--line);}
+.day:last-child{border-bottom:none;}
+.day .d{font-size:11px;letter-spacing:.12em;color:var(--lake);padding-top:3px;}
+.day .c{min-width:0;}
+.day .c b{display:block;font-size:15px;margin-bottom:5px;}
+.day .c p{font-size:12.5px;color:rgba(34,50,60,.66);line-height:1.65;
+  word-break:break-word;}
+
+/* ===== 11 成效 ===== */
+.bars{display:flex;align-items:flex-end;gap:16px;height:172px;margin:10px 0 8px;}
+.bars .bar{flex:1;border-radius:8px 8px 0 0;position:relative;
+  background:linear-gradient(180deg,var(--lake),rgba(30,110,140,.45));}
+.bars .bar:nth-child(2){background:linear-gradient(180deg,#2B86A6,rgba(43,134,166,.45));}
+.bars .bar:nth-child(3){background:linear-gradient(180deg,var(--sun),rgba(222,132,56,.45));}
+.bars .bar:nth-child(4){background:linear-gradient(180deg,#8FA8AE,rgba(143,168,174,.45));}
+.bars .bar em{position:absolute;top:-24px;left:0;right:0;text-align:center;
+  font-style:normal;font-size:12.5px;font-weight:700;color:var(--ink);}
+.bars-x{display:flex;gap:16px;}
+.bars-x span{flex:1;text-align:center;font-size:11px;color:rgba(34,50,60,.6);}
+
+/* ===== 12 封底 ===== */
+.qr{width:180px;margin:0 auto;border-radius:14px;padding:10px;background:#FFFFFF;
+  display:flex;align-items:center;justify-content:center;}
+.qr img{display:block;width:160px;height:160px;}
+.foot{margin-top:20px;font-size:11.5px;color:rgba(34,50,60,.55);line-height:2;text-align:center;}
+.dark{background:linear-gradient(170deg,#0E3F52,#123B4C 55%,#22323C);color:#EDE8DC;}
+.dark .label{color:var(--sun);}
+.dark .rule{background:rgba(237,232,220,.2);}
+.dark .sub,.dark .meta,.dark .foot{color:rgba(237,232,220,.72);}
+.dark .qr{background:#FFFFFF;}
+
+/* 桌面浏览器预览时，把内容收进一个手机宽度的居中栏 */
+@media (min-width:480px){
+  body{background:#E9E4DA;}
+  .h5{width:390px;margin:0 auto;box-shadow:0 0 70px rgba(34,50,60,.16);}
+}
+
+/* 背景音乐开关 */
+.bgm{position:fixed;bottom:20px;left:20px;z-index:55;width:36px;height:36px;
+  border-radius:50%;border:none;padding:0;cursor:pointer;
+  display:flex;align-items:center;justify-content:center;
+  background:rgba(34,50,60,.10);color:var(--deep);
+  transition:background .25s ease,color .25s ease;}
+.bgm:hover{background:rgba(34,50,60,.18);}
+.bgm.playing{background:rgba(30,110,140,.20);color:var(--lake);}
+.bgm .ic-on{display:none;}
+.bgm.playing .ic-on{display:block;}
+.bgm.playing .ic-off{display:none;}
+</style>
+</head>
+<body>
+
+<div class="progress" id="bar"></div>
+<div class="dots" id="dots"></div>
+
+<div class="h5" id="h5">
+
+  <!-- 01 封面 | 动画：候鸟漂移循环 + 主题字入场 + 分隔线生长 + 副标题 + 提示浮动 -->
+  <section class="screen">
+    <div class="cover-bg"></div>
+    <div class="cover-inner">
+      <svg class="birds drift a d1" width="118" height="30" viewBox="0 0 118 30" fill="none" style="margin-bottom:26px">
+        <path d="M2 14C10 4 18 4 26 14C34 4 42 4 50 14" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"/>
+        <path d="M56 22C62 15 68 15 74 22C80 15 86 15 92 22" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" opacity=".6"/>
+        <path d="M88 8C94 2 99 2 105 8C110 3 114 3 118 8" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" opacity=".38"/>
+      </svg>
+      <p class="label a d2">2026 · 中国江西 · 鄱阳湖</p>
+      <h1 class="serif a d3" style="margin-top:18px">鄱阳湖<br>国际观鸟季</h1>
+      <div class="rule grow" style="margin:26px 0 20px"></div>
+      <p class="sub a d5">生态消费周　一湖清水 · 万羽归巢</p>
+      <p class="meta a d6" style="margin-top:14px">12.18—12.20　主会场：南昌南矶湿地</p>
+    </div>
+    <div class="hint a d7">轻触开启音乐　·　上滑查看 <span>↓</span></div>
+  </section>
+
+  <!-- 02 主题语 | 动画：大字入场 + 分隔线生长 + 水波循环 + 候鸟漂移 -->
+  <section class="screen" style="justify-content:center">
+    <p class="label a d1">主题</p>
+    <h2 class="serif a d2" style="margin-top:20px;font-size:36px;line-height:1.5">
+      一湖清水<br>万羽归巢
+    </h2>
+    <div class="rule grow" style="margin:26px 0"></div>
+    <p class="sub a d4">
+      候鸟每年如期而至，观鸟的人却只来一次。<br>
+      我们要做的，是把这份季节性的相遇，留下来。
+    </p>
+    <svg class="wave a d5" width="100%" height="42" viewBox="0 0 320 42" fill="none" style="margin-top:34px">
+      <path d="M0 16C26 4 54 4 80 16C106 28 134 28 160 16C186 4 214 4 240 16C266 28 294 28 320 16" stroke="#1E6E8C" stroke-width="1.4" opacity=".5"/>
+      <path d="M0 32C26 20 54 20 80 32C106 44 134 44 160 32C186 20 214 20 240 32C266 44 294 44 320 32" stroke="#DE8438" stroke-width="1.2" opacity=".32"/>
+    </svg>
+    <div class="idx">02</div>
+  </section>
+
+  <!-- 03 为什么是鄱阳湖 | 动画：标题 + 三组数据逐条入场 + 底下说明 -->
+  <section class="screen">
+    <p class="label a d1">为什么是鄱阳湖</p>
+    <h2 class="serif a d2" style="margin:16px 0 10px">候鸟选中了这里</h2>
+    <div>
+      <div class="stat a d3"><b>最大</b><span>中国最大的淡水湖，也是东亚—澳大利西亚候鸟迁飞通道上的关键驿站</span></div>
+      <div class="stat a d4"><b>数十万</b><span>每年冬季在此越冬的候鸟数量，白鹤、东方白鹳等珍稀物种在此集群</span></div>
+      <div class="stat a d5"><b>12 月</b><span>候鸟越冬高峰恰在冬季，与年末消费季天然重合</span></div>
+    </div>
+    <p class="meta a d6" style="margin-top:18px">数据来源：公开报道与保护区公开资料</p>
+    <div class="idx">03</div>
+  </section>
+
+  <!-- 04 我们要做什么 | 动画：标题 + 旧卡 + 箭头 + 新卡 + 结语 -->
+  <section class="screen">
+    <p class="label a d1">要解决的问题</p>
+    <h2 class="serif a d2" style="margin:16px 0 22px">从一次观景<br>到一场消费</h2>
+    <div class="compare">
+      <div class="card old a d3">
+        <h3>现在的样子</h3>
+        <p>观鸟是季节性的、一次性的。人来了，拍完照就走，周边的民宿、餐饮、农产品没有接住这波客流。</p>
+      </div>
+      <div class="arrow a d4">↓</div>
+      <div class="card new a d5">
+        <h3>我们要做的</h3>
+        <p>把观鸟季升级为「观鸟＋生态消费」的复合场景，让候鸟带来的流量，落到本地产品和本地商户身上。</p>
+      </div>
+    </div>
+    <div class="idx">04</div>
+  </section>
+
+  <!-- 05 三大板块 | 动画：标题 + 三块依次入场 + 图标旋转 -->
+  <section class="screen">
+    <p class="label a d1">活动构成</p>
+    <h2 class="serif a d2" style="margin:16px 0 22px">三大板块</h2>
+    <div class="plates">
+      <a class="plate link a d3" href="#s6" data-go="6"><i class="pulse">01</i><div><b>云端观鸟</b><p>24 小时慢直播与 AI 识鸟，线上先聚人</p></div><span class="go">→</span></a>
+      <a class="plate link a d4" href="#s7" data-go="7"><i class="pulse">02</i><div><b>生态市集</b><p>本地生态产品与文创摊位，把流量变消费</p></div><span class="go">→</span></a>
+      <a class="plate link a d5" href="#s8" data-go="8"><i class="pulse">03</i><div><b>湿地研学</b><p>面向亲子与学校的自然教育课程</p></div><span class="go">→</span></a>
+    </div>
+    <div class="idx">05</div>
+  </section>
+
+  <!-- 06 云端观鸟 | 动画：手机滑入 + 扫描线循环 + 落日渐显 + 三条功能 -->
+  <section class="screen">
+    <a class="back a d1" href="#s5" data-go="5">← 返回三大板块</a>
+    <p class="label a d1" style="text-align:center">板块一</p>
+    <h2 class="serif a d2" style="margin:14px 0 24px;text-align:center">云端观鸟</h2>
+    <div class="phone zoom a d3">
+      <div class="scr">
+        <div class="sunset"></div>
+        <div class="land"></div>
+        <svg class="drift" width="150" height="26" viewBox="0 0 150 26" fill="none" style="bottom:56px;left:18px;color:#F4F0E7;opacity:.9">
+          <path d="M2 12C9 4 16 4 23 12C30 4 37 4 44 12" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+          <path d="M58 20C64 14 70 14 76 20C82 14 88 14 94 20" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" opacity=".7"/>
+        </svg>
+        <div class="rec"><em class="pulse"></em>LIVE 南矶湿地</div>
+        <div class="scan" style="position:absolute;left:0;right:0;top:50%;height:2px;
+          background:linear-gradient(90deg,transparent,rgba(255,255,255,.9),transparent)"></div>
+      </div>
+    </div>
+    <div class="plates">
+      <div class="plate a d4"><i>01</i><div><b>慢直播</b><p>固定机位不间断直播候鸟栖息地</p></div></div>
+      <div class="plate a d5"><i>02</i><div><b>AI 识鸟</b><p>上传照片即可识别鸟种并生成观鸟记录</p></div></div>
+      <div class="plate a d6"><i>03</i><div><b>云端守护</b><p>线上认养一块湿地，获得年度观鸟报告</p></div></div>
+    </div>
+    <div class="idx">06</div>
+  </section>
+
+  <!-- 07 生态市集 | 动画：标题 + 四格错峰入场 -->
+  <section class="screen">
+    <a class="back a d1" href="#s5" data-go="5">← 返回三大板块</a>
+    <p class="label a d1">板块二</p>
+    <h2 class="serif a d2" style="margin:16px 0 20px">生态市集</h2>
+    <div class="grid">
+      <div class="cell a d3"><b>有机大米</b><p>湖区周边生态种植</p></div>
+      <div class="cell a d4"><b>山茶油</b><p>本地油茶压榨</p></div>
+      <div class="cell a d5"><b>芦苇编织</b><p>非遗手艺与再生材料</p></div>
+      <div class="cell a d6"><b>候鸟文创</b><p>徽章、望远镜挂饰</p></div>
+    </div>
+    <p class="meta a d7" style="margin-top:20px">全部摊位采用可循环展具，展后统一回收</p>
+    <div class="idx">07</div>
+  </section>
+
+  <!-- 08 湿地研学 | 动画：返回按钮 + 标题 + 三块依次入场 -->
+  <section class="screen">
+    <a class="back a d1" href="#s5" data-go="5">← 返回三大板块</a>
+    <p class="label a d1" style="text-align:center">板块三</p>
+    <h2 class="serif a d2" style="margin:14px 0 24px;text-align:center">湿地研学</h2>
+    <div class="plates">
+      <div class="plate a d3"><i>01</i><div><b>自然教育课程</b><p>湿地生态、候鸟迁徙与鸟类识别的分级课程</p></div></div>
+      <div class="plate a d4"><i>02</i><div><b>观鸟领队体验</b><p>跟随本地领队进入保护区，学习观测与记录方法</p></div></div>
+      <div class="plate a d5"><i>03</i><div><b>学校定制研学</b><p>按学段设计半日或一日线路，配师资与学习手册</p></div></div>
+    </div>
+    <p class="meta a d6" style="margin-top:20px">研学收益的一部分用于湿地巡护与候鸟保护</p>
+    <div class="idx">08</div>
+  </section>
+
+  <!-- 09 谁来参加 | 动画：标题 + 标签依次弹出 -->
+  <section class="screen">
+    <p class="label a d1">参与者</p>
+    <h2 class="serif a d2" style="margin:16px 0 20px">谁会来这里</h2>
+    <div class="tags">
+      <span class="tag hot a d3">观鸟爱好者</span>
+      <span class="tag a d3">亲子家庭</span>
+      <span class="tag a d4">摄影社区</span>
+      <span class="tag a d4">生态品牌</span>
+      <span class="tag hot a d5">自然研学机构</span>
+      <span class="tag a d5">周边民宿与餐饮</span>
+      <span class="tag a d6">高校观鸟社团</span>
+      <span class="tag a d6">环保公益组织</span>
+    </div>
+    <p class="meta a d7" style="margin-top:22px">线上线下同步招募，线上以直播与社群为主</p>
+    <div class="idx">09</div>
+  </section>
+
+  <!-- 09 三天日程 | 动画：标题 + 三天依次入场 -->
+  <section class="screen">
+    <p class="label a d1">日程</p>
+    <h2 class="serif a d2" style="margin:16px 0 14px">三天怎么安排</h2>
+    <div>
+      <div class="day a d3"><div class="d">DAY 1</div><div class="c"><b>开幕与云端连线</b><p>主会场开幕，慢直播开机，线上同步发布观鸟地图</p></div></div>
+      <div class="day a d4"><div class="d">DAY 2</div><div class="c"><b>生态市集与对接</b><p>生态产品展销，品牌与渠道商现场洽谈</p></div></div>
+      <div class="day a d5"><div class="d">DAY 3</div><div class="c"><b>研学与公众开放</b><p>自然教育课程、观鸟领队体验、文创发布</p></div></div>
+    </div>
+    <div class="idx">10</div>
+  </section>
+
+  <!-- 10 参与方式 | 动画：标题 + 三块入场 + 脉冲 -->
+  <section class="screen">
+    <p class="label a d1">参与</p>
+    <h2 class="serif a d2" style="margin:16px 0 22px">三种方式<br>加入我们</h2>
+    <div class="plates">
+      <div class="plate a d3"><i class="pulse">A</i><div><b>我是观众</b><p>线上预约，免费参加公众开放日</p></div></div>
+      <div class="plate a d4"><i class="pulse">B</i><div><b>我是品牌</b><p>申请生态市集摊位，需通过绿色资质审核</p></div></div>
+      <div class="plate a d5"><i class="pulse">C</i><div><b>我是志愿者</b><p>加入湿地守护队，参与巡护与导览</p></div></div>
+    </div>
+    <div class="idx">11</div>
+  </section>
+
+  <!-- 11 预期成效 | 动画：标题 + 柱状图生长 + 数字 + 坐标 -->
+  <section class="screen">
+    <p class="label a d1">预期成效</p>
+    <h2 class="serif a d2" style="margin:16px 0 4px">我们希望达成</h2>
+    <div class="bars">
+      <div class="bar rise a d3" style="height:42%"><em>12 场</em></div>
+      <div class="bar rise a d4" style="height:66%"><em>60 个</em></div>
+      <div class="bar rise a d5" style="height:88%"><em>10 万+</em></div>
+      <div class="bar rise a d6" style="height:54%"><em>3 天</em></div>
+    </div>
+    <div class="bars-x a d7">
+      <span>主题活动</span><span>生态摊位</span><span>线上观看</span><span>持续时长</span>
+    </div>
+    <p class="meta a d7" style="margin-top:20px">以上为活动筹备阶段设定的预期目标</p>
+    <div class="idx">12</div>
+  </section>
+
+  <!-- 12 封底 | 动画：二维码缩放 + 文字 + 波形 + 收束 -->
+  <section class="screen dark">
+    <div style="text-align:center">
+      <svg class="birds drift" width="112" height="28" viewBox="0 0 112 28" fill="none" style="color:#DE8438;margin-bottom:24px">
+        <path d="M2 12C9 4 16 4 23 12C30 4 37 4 44 12" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+        <path d="M58 20C64 14 70 14 76 20C82 14 88 14 94 20" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" opacity=".6"/>
+      </svg>
+      <h2 class="serif a d1" style="font-size:28px">一湖清水　万羽归巢</h2>
+      <div class="rule grow" style="margin:24px 0"></div>
+      <div class="qr zoom a d3"><img src="data:image/png;base64,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" alt="扫码进入作品，二维码指向本作品在线预览地址"></div>
+      <p class="foot a d4">扫码进入活动主页，预约观鸟与市集<br>2026 鄱阳湖国际观鸟季 · 生态消费周组委会</p>
+    </div>
+    <div class="idx" style="color:rgba(237,232,220,.4)">13</div>
+  </section>
+
+</div>
+
+<audio id="bgm" src="bgm.mp3" loop preload="auto"></audio>
+<button id="bgmBtn" class="bgm" type="button" aria-label="背景音乐开关">
+  <svg class="ic-off" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+       stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+    <path d="M9 18V6l10-2v12"/>
+    <circle cx="6.5" cy="18" r="2.5"/>
+    <circle cx="16.5" cy="16" r="2.5"/>
+    <line x1="3" y1="21" x2="21" y2="3"/>
+  </svg>
+  <svg class="ic-on" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+       stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+    <path d="M9 18V6l10-2v12"/>
+    <circle cx="6.5" cy="18" r="2.5"/>
+    <circle cx="16.5" cy="16" r="2.5"/>
+  </svg>
+</button>
+
+<script>
+(function(){
+  var h5 = document.getElementById('h5');
+  var bar = document.getElementById('bar');
+  var dotsWrap = document.getElementById('dots');
+  var screens = Array.prototype.slice.call(document.querySelectorAll('.screen'));
+  var cur = 0;
+
+  screens.forEach(function(s,i){
+    var d = document.createElement('i');
+    d.className = 'dot' + (i===0?' on':'');
+    dotsWrap.appendChild(d);
+  });
+  var dots = Array.prototype.slice.call(dotsWrap.children);
+
+  function activate(el){
+    var i = screens.indexOf(el);
+    if(i < 0) return;
+    cur = i;
+    screens.forEach(function(s,j){ if(j!==i) s.classList.remove('in'); });
+    el.classList.add('in');
+    dots.forEach(function(d,j){ d.classList.toggle('on', j===i); });
+    place();
+  }
+
+  function place(){
+    var r = h5.getBoundingClientRect();
+    var w = r.width || window.innerWidth;
+    bar.style.left = r.left + 'px';
+    bar.style.width = ((cur+1)/screens.length*w) + 'px';
+    dotsWrap.style.left = (r.left + w - 21) + 'px';
+    dotsWrap.style.right = 'auto';
+    if(bgmBtn) bgmBtn.style.left = (r.left + 20) + 'px';
+  }
+
+  window.addEventListener('resize', place);
+
+  /* 按滚动位置定位当前屏 */
+  function current(){
+    var i = Math.round(h5.scrollTop / h5.clientHeight);
+    return Math.max(0, Math.min(screens.length-1, i));
+  }
+
+  /* 跳屏后短时间内锁定目标屏，避免滚动途中的中间态把目标屏内容清空 */
+  var lockIndex = -1, lockUntil = 0;
+  function sync(){
+    var i = (Date.now() < lockUntil && lockIndex >= 0) ? lockIndex : current();
+    if(i !== cur || !screens[i].classList.contains('in')) activate(screens[i]);
+  }
+
+  function jump(i, smooth){
+    lockIndex = i; lockUntil = Date.now() + 900;
+    var t = screens[i];
+    if(smooth){
+      try { h5.scrollTo({top: t.offsetTop, behavior: 'smooth'}); }
+      catch(e){ h5.scrollTop = t.offsetTop; }
+    } else {
+      h5.scrollTop = t.offsetTop;
+    }
+    activate(t);
+  }
+
+  h5.addEventListener('scroll', function(){ sync(); }, {passive:true});
+  window.addEventListener('resize', function(){ place(); });
+
+  /* 卡片与返回按钮的屏内跳转 */
+  Array.prototype.forEach.call(document.querySelectorAll('[data-go]'), function(el){
+    el.addEventListener('click', function(ev){
+      var n = parseInt(el.getAttribute('data-go'), 10);
+      if(!n || n < 1 || n > screens.length) return;
+      ev.preventDefault();
+      jump(n-1, true);
+      if(history.replaceState) history.replaceState(null, '', '#s' + n);
+    });
+  });
+
+  /* 支持 #s3 形式的直达链接，便于截图与单屏预览 */
+  var m = /^#s(\d+)$/.exec(location.hash || '');
+  var start = m ? Math.min(Math.max(parseInt(m[1],10),1), screens.length) - 1 : 0;
+  jump(start, false);
+  requestAnimationFrame(function(){ h5.scrollTop = screens[start].offsetTop; });
+  setTimeout(function(){ h5.scrollTop = screens[start].offsetTop; sync(); }, 150);
+
+  /* 背景音乐：首次交互后淡入，左下角按钮可开关 */
+  var bgm = document.getElementById('bgm');
+  var bgmBtn = document.getElementById('bgmBtn');
+  var bgmTimer = null;
+  var bgmOn = false;
+  var unlocked = false;
+
+  function fadeTo(target){
+    if(!bgm) return;
+    if(bgmTimer){ clearInterval(bgmTimer); }
+    bgmTimer = setInterval(function(){
+      var step = 0.04;
+      var v = bgm.volume;
+      if(Math.abs(v - target) <= step){
+        bgm.volume = target;
+        clearInterval(bgmTimer); bgmTimer = null;
+        if(target === 0) bgm.pause();
+        return;
+      }
+      bgm.volume = v + (target > v ? step : -step);
+    }, 70);
+  }
+
+  function startBgm(){
+    if(!bgm || bgmOn) return;
+    bgmOn = true;
+    bgmBtn.classList.add('playing');
+    bgm.volume = 0;
+    var p = bgm.play();
+    if(p && p.then){
+      p.then(function(){ fadeTo(0.42); }).catch(function(){
+        bgmOn = false;
+        bgmBtn.classList.remove('playing');
+      });
+    } else {
+      fadeTo(0.42);
+    }
+  }
+
+  function stopBgm(){
+    if(!bgm || !bgmOn) return;
+    bgmOn = false;
+    bgmBtn.classList.remove('playing');
+    fadeTo(0);
+  }
+
+  if(bgmBtn){
+    bgmBtn.addEventListener('click', function(ev){
+      ev.stopPropagation();
+      unlocked = true;
+      if(bgmOn){ stopBgm(); } else { startBgm(); }
+    });
+  }
+
+  function unlock(ev){
+    if(unlocked) return;
+    if(ev && ev.target && ev.target.closest && ev.target.closest('#bgmBtn')) return;
+    unlocked = true;
+    startBgm();
+  }
+  ['touchstart', 'pointerdown', 'click'].forEach(function(type){
+    document.addEventListener(type, unlock, {passive: true});
+  });
+  place();
+})();
+</script>
+</body>
+</html>
